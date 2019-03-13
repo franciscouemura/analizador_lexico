@@ -5,7 +5,6 @@
  */
 package analizador_lexico;
 
-
 /**
  *
  * @author framc
@@ -20,9 +19,9 @@ public class Principal extends javax.swing.JFrame {
     }
 
     int linha = 0;
-    int coluna =0;
-    int index=0;
-    
+    int coluna = 0;
+    int index = 0;
+
     String texto;
 
     /**
@@ -194,26 +193,25 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExecutarActionPerformed
-       
+
     }//GEN-LAST:event_jButtonExecutarActionPerformed
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
         texto = jTextPaneFonte.getText().toString();
         analisadorLexico(texto);
-        
+
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
-       jTextPaneFonte.setText("");
-       jTextAreaItensLexicos.setText("");
+        jTextPaneFonte.setText("");
+        jTextAreaItensLexicos.setText("");
     }//GEN-LAST:event_jButtonNovoActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
-   
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -243,215 +241,194 @@ public class Principal extends javax.swing.JFrame {
                 new Principal().setVisible(true);
             }
         });
-        
- 
+
     }
-    
-    public void analisadorLexico(String texto){
-        while(index<texto.length()){
+
+    public void analisadorLexico(String texto) {
+        while (index < texto.length()) {
             String a = String.format("%c", texto.charAt(index));
             System.out.println("ok1");
-            if(texto.charAt(index)>' '){
+            if (texto.charAt(index) > ' ') {
                 System.out.println("ok2");
                 Lexema item = classifica(a);
+                if(item==null)
+                    System.out.println("not ok");
                 System.out.println("ok3");
                 jTextAreaItensLexicos.setText(
-                    String.format("%s(Linha: , Coluna: ) - %s - %s = %s\n",
-                            jTextAreaItensLexicos.getText(),
-                           // item.getLinha(), 
-                            //item.getColuna(), 
-                            item.getDescricao(), 
-                            item.getClasse(), 
-                            item.getTexto())
+                        String.format("%s(Linha: , Coluna: ) - %s - %s = %s\n",
+                                jTextAreaItensLexicos.getText(),
+                                // item.getLinha(), 
+                                //item.getColuna(), 
+                                item.getDescricao(),
+                                item.getClasse(),
+                                item.getTexto())
                 );
-            }
-            else{
+            } else {
                 index++;
             }
         }
     }
-    
-    public Lexema classifica(String a){
-       Lexema item = null;
-       if(a.matches("[a-zA-Z]")){
-           item = identificador();
-       }else{
-           System.out.println("ok4");
-           if(a.matches("\\d")){
-               System.out.println("ok5");
-               item = numero();
-               System.out.println("ok6");
-           }else{
-               if(a.equals("\"")){
-                   item = string();
-               }
-               else{
-                   if(a.equals(":")){
-                       if(texto.charAt(index+1) == '='){
-                           item = new Lexema(String.format("%c%c", texto.charAt(index),a.charAt(index+1)), "cAtr", "Atribuição", linha,coluna);
-                           index=index+2;
-                       }
-                       else{
-                           item = new Lexema(a, "cDPto", "Dois Pontos", linha,coluna);
-                           index++;
-                       }
-                   }
-                   else{
-                       if(a.equals("(")){
-                            item = new Lexema(a, "cLPar", "Abre Parênteses", linha,coluna);
+
+    public Lexema classifica(String a) {
+        Lexema item = null;
+        if (a.matches("[a-zA-Z]")) {
+            item = identificador();
+        } else {
+            System.out.println("ok4");
+            if (a.matches("\\d")) {
+                System.out.println("ok5");
+                item = numero();
+                System.out.println("ok6");
+            } else {
+                if (a.equals("\"")) {
+                    item = string();
+                } else {
+                    if (a.equals(":")) {
+                        if (texto.charAt(index + 1) == '=') {
+                            item = new Lexema(String.format("%c%c", texto.charAt(index), texto.charAt(index + 1)), "cAtr", "Atribuição", linha, coluna);
+                            index = index + 2;
+                        } else {
+                            item = new Lexema(a, "cDPto", "Dois Pontos", linha, coluna);
                             index++;
-                       }
-                       else{
-                           if(a.equals(")")){
-                               item = new Lexema(a, "cRPar", "Fecha Parênteses", linha,coluna);
-                               index++;
-                           }
-                           else{
-                               if(a.equals("+")){
-                                  item = new Lexema(a, "cAdd", "Adição", linha,coluna);
-                                  index++;
-                               }
-                               else{
-                                   if(a.equals("-")){
-                                       item = new Lexema(a, "cSub", "Subtração", linha,coluna);
-                                       index++;
-                                   }
-                                   else{
-                                       if(a.equals("*")){
-                                           item = new Lexema(a, "cMul", "Multiplicação", linha,coluna);
-                                           index++;
-                                       }
-                                       else{
-                                           if(a.equals("/")){
-                                               item = new Lexema(a, "cDiv", "Divisão", linha,coluna);
-                                               index++;
-                                           }
-                                           else{
-                                               if(a.equals("=")){
-                                                   item = new Lexema(a, "cEQ", "Igual", linha,coluna);
-                                                   index++;
-                                               }
-                                               else{
-                                                   if(a.equals("<")){
-                                                       if(a.charAt(index+1)== '='){
-                                                           item = new Lexema(String.format("%s%c", a, texto.charAt(index+1)), "cLE", "Menor ou Igual", linha,coluna);
-                                                           index=index+2;
-                                                       }
-                                                       else{
-                                                           if(a.charAt(index+1)== '>'){
-                                                                item = new Lexema(String.format("%s%c", a, texto.charAt(index+1)), "cNE", "Diferente", linha,coluna);
-                                                                index=index+2;
-                                                           }
-                                                           else{
-                                                                item = new Lexema(a, "cLT", "Menor", linha,coluna);
-                                                                index++; 
-                                                            }
-                                                       }
-                                                   }
-                                                   else{
-                                                       if(a.equals(">")){
-                                                           if(a.charAt(index+1)== '='){
-                                                           item = new Lexema(String.format("%s%c", a, texto.charAt(index+1)), "cGE", "Maior ou Igual", linha,coluna);
-                                                           index=index+2;
-                                                        }
-                                                         else{
-                                                           item = new Lexema(a, "cGT", "Maior", linha,coluna);
-                                                           index++;
-                                                         }
-                                                       }
-                                                       else{
-                                                           if(a.equals(";")){
-                                                                item = new Lexema(a, "cPVir", "Ponto e Virgula", linha,coluna);
+                        }
+                    } else {
+                        if (a.equals("(")) {
+                            item = new Lexema(a, "cLPar", "Abre Parênteses", linha, coluna);
+                            index++;
+                        } else {
+                            if (a.equals(")")) {
+                                item = new Lexema(a, "cRPar", "Fecha Parênteses", linha, coluna);
+                                index++;
+                            } else {
+                                if (a.equals("+")) {
+                                    item = new Lexema(a, "cAdd", "Adição", linha, coluna);
+                                    index++;
+                                } else {
+                                    if (a.equals("-")) {
+                                        item = new Lexema(a, "cSub", "Subtração", linha, coluna);
+                                        index++;
+                                    } else {
+                                        if (a.equals("*")) {
+                                            item = new Lexema(a, "cMul", "Multiplicação", linha, coluna);
+                                            index++;
+                                        } else {
+                                            if (a.equals("/")) {
+                                                item = new Lexema(a, "cDiv", "Divisão", linha, coluna);
+                                                index++;
+                                            } else {
+                                                if (a.equals("=")) {
+                                                    item = new Lexema(a, "cEQ", "Igual", linha, coluna);
+                                                    index++;
+                                                } else {
+                                                    if (a.equals("<")) {
+                                                        if (a.charAt(index + 1) == '=') {
+                                                            item = new Lexema(String.format("%s%c", a, texto.charAt(index + 1)), "cLE", "Menor ou Igual", linha, coluna);
+                                                            index = index + 2;
+                                                        } else {
+                                                            if (a.charAt(index + 1) == '>') {
+                                                                item = new Lexema(String.format("%s%c", a, texto.charAt(index + 1)), "cNE", "Diferente", linha, coluna);
+                                                                index = index + 2;
+                                                            } else {
+                                                                item = new Lexema(a, "cLT", "Menor", linha, coluna);
                                                                 index++;
-                                                           }
-                                                           else{
-                                                               if(a.equals(",")){
-                                                                 item = new Lexema(a, "cVir", "Virgula", linha,coluna);
-                                                                 index++;  
-                                                               }
-                                                               else{
-                                                                   if(a.equals(".")){
-                                                                     item = new Lexema(a, "cPto", "Ponto", linha,coluna);
-                                                                     index++;
-                                                                   }
-                                                               }
-                                                           }
-                                                       }
-                                                   }
-                                               }
-                                           }
-                                       }
-                                   
-                                   }
-                               }
-                           }
-                       
-                       }
-                   }
-               }
-           }
-       }
-        
-    return item;
-    }
-    
-   
-    
-    public Lexema numero(){
-       Lexema resultado;
-       String c =new String();
-       String leitor = String.format("%c",texto.charAt(index));
-        System.out.println("ok7");
-        do{
-           System.out.println("ok8");
-           c = leitor.substring(0);
-           index++;
-           if(index<texto.length()){
-           leitor = String.format("%s%c",leitor, texto.charAt(index));
-           }
-           
-        }while((leitor.matches("\\d+") || leitor.matches("\\d+[,][\\d][E e ][|-]?[\\d+]"))&& index<texto.length());
-        
-        if(c.matches("[\\d]+")){
-            resultado = new Lexema(c,"cInt","Número Inteiro",linha,coluna );
-        }
-            else{
-                resultado = new Lexema(c,"cReal","Número Real",linha,coluna );
+                                                            }
+                                                        }
+                                                    } else {
+                                                        if (a.equals(">")) {
+                                                            if (texto.charAt(index + 1) == '=') {
+                                                                item = new Lexema(String.format("%s%c", a, texto.charAt(index + 1)), "cGE", "Maior ou Igual", linha, coluna);
+                                                                index = index + 2;
+                                                            } else {
+                                                                item = new Lexema(a, "cGT", "Maior", linha, coluna);
+                                                                index++;
+                                                            }
+                                                        } else {
+                                                            if (a.equals(";")) {
+                                                                item = new Lexema(a, "cPVir", "Ponto e Virgula", linha, coluna);
+                                                                index++;
+                                                            } else {
+                                                                if (a.equals(",")) {
+                                                                    item = new Lexema(a, "cVir", "Virgula", linha, coluna);
+                                                                    index++;
+                                                                } else {
+                                                                    if (a.equals(".")) {
+                                                                        item = new Lexema(a, "cPto", "Ponto", linha, coluna);
+                                                                        index++;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
             }
-        
-        return resultado;
+        }
+
+        return item;
     }
-  
-    public Lexema identificador(){
+
+    public Lexema numero() {
+        Lexema resultado;
         String c = new String();
-        String leitor = String.format("%c",texto.charAt(index));
-        do{
-           c = leitor.substring(0);
-           index++;
-           if(index<texto.length()){
-           leitor = String.format("%s%c",leitor, texto.charAt(index));
-           }
-           
-        }while(leitor.matches("[\\w][\\w|\\d]+?") && index<texto.length());
-        Lexema resultado = new Lexema(c,"cId","Identificador",linha,coluna );
-        
+        String leitor = String.format("%c", texto.charAt(index));
+        System.out.println("ok7");
+        do {
+            System.out.println("ok8");
+            c = leitor.substring(0);
+            index++;
+            if (index < texto.length()) {
+                leitor = String.format("%s%c", leitor, texto.charAt(index));
+            }
+
+        } while ((leitor.matches("\\d+") || leitor.matches("\\d+[,][\\d][E e ][|-]?[\\d+]")) && index < texto.length());
+
+        if (c.matches("[\\d]+")) {
+            resultado = new Lexema(c, "cInt", "Número Inteiro", linha, coluna);
+        } else {
+            resultado = new Lexema(c, "cReal", "Número Real", linha, coluna);
+        }
+
         return resultado;
     }
-    
-    public Lexema string (){
-        String leitor = String.format("%c",texto.charAt(index));
-        
-        do{
-           
-          index++;
-          leitor = String.format("%s%c",leitor, texto.charAt(index));
-            
-        }while(!(String.format("%c", texto.charAt(index)).equals("\"")) && index<texto.length());
+
+    public Lexema identificador() {
+        String c = new String();
+        String leitor = String.format("%c", texto.charAt(index));
+        do {
+            c = leitor.substring(0);
+            index++;
+            if (index < texto.length()) {
+                leitor = String.format("%s%c", leitor, texto.charAt(index));
+            }
+
+        } while (leitor.matches("[\\w][\\w|\\d]+?") && index < texto.length());
+        Lexema resultado = new Lexema(c, "cId", "Identificador", linha, coluna);
+
+        return resultado;
+    }
+
+    public Lexema string() {
+        String leitor = String.format("%c", texto.charAt(index));
+
+        do {
+
+            index++;
+            leitor = String.format("%s%c", leitor, texto.charAt(index));
+
+        } while (!(String.format("%c", texto.charAt(index)).equals("\"")) && index < texto.length());
         index++;
-        Lexema resultado = new Lexema(leitor,"cStr","String",linha,coluna );
+        Lexema resultado = new Lexema(leitor, "cStr", "String", linha, coluna);
         return resultado;
     }
-    
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
