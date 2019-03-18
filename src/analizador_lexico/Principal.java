@@ -21,6 +21,7 @@ public class Principal extends javax.swing.JFrame {
     int linha = 0;
     int coluna = 0;
     int index = 0;
+    int lastLine = 0;
 
     String texto;
 
@@ -198,7 +199,9 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
         texto = jTextPaneFonte.getText().toString();
-        analisadorLexico(texto);
+        while(index < texto.length()){
+            analisadorLexico(texto);
+        }
 
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
@@ -245,27 +248,25 @@ public class Principal extends javax.swing.JFrame {
     }
 
     public void analisadorLexico(String texto) {
-        while (index < texto.length()) {
-            String a = String.format("%c", texto.charAt(index));
-            System.out.println("ok1");
-            if (texto.charAt(index) > ' ') {
-                System.out.println("ok2");
-                Lexema item = classifica(a);
-                if(item==null)
-                    System.out.println("not ok");
-                System.out.println("ok3");
-                jTextAreaItensLexicos.setText(
-                        String.format("%s(Linha: , Coluna: ) - %s - %s = %s\n",
-                                jTextAreaItensLexicos.getText(),
-                                // item.getLinha(), 
-                                //item.getColuna(), 
-                                item.getDescricao(),
-                                item.getClasse(),
-                                item.getTexto())
-                );
-            } else {
-                index++;
+        String a = String.format("%c", texto.charAt(index));
+        if (texto.charAt(index) > ' ') {
+            coluna = index-lastLine;
+            Lexema item = classifica(a);
+            jTextAreaItensLexicos.setText(
+                    String.format("%s(Linha: %d, Coluna: %d) - %s - %s = %s\n",
+                            jTextAreaItensLexicos.getText(),
+                             item.getLinha()+1, 
+                            item.getColuna()+1, 
+                            item.getDescricao(),
+                            item.getClasse(),
+                            item.getTexto())
+            );
+        } else {
+            if(texto.charAt(index) == '\n'){
+                linha++;
+                lastLine = index + 1;
             }
+            index++;
         }
     }
 
