@@ -1,0 +1,49 @@
+<programa> ::= program id <corpo> •
+<corpo> ::= <declara> <rotina> begin <sentencas> end
+<declara> ::= var <dvar> <declara> | 
+<dvar> ::= <variaveis> : <dvarL> 
+<dvarL> ::= <tipo_var> ; <dvar> | <tipo_var>
+<tipo_var> ::= integer | real
+<variaveis> ::= id <variaveisL>
+<variaveisL> ::= , id <variaveisL> | 
+<rotina> ::= <procedimento> | <funcao> | 
+<procedimento> ::= procedure id <parametros> ; <corpo> ; <rotina>
+<funcao> ::= function id <parametros> : <tipo_funcao> ; <corpo> ; <rotina>
+<parametros> ::= ( <lista_parametros> ) | 
+<lista_parametros> ::= <lista_id> : <tipo_var> <lista_paremetrosL>
+<lista_parametrosL> ::=  ; <lista_parametros> | 
+<lista_id> ::= id <listaidL>
+<lista_idL> = , id <lista_idL> | 
+<tipo_funcao> ::= integer | real
+<sentencas> ::= <comando> <sentencasL>
+<sentencasL> ::= ; <sentencas> | 
+<var_read> ::= id <var_readL>
+<var_readL> ::= , <var_read> | 
+<var_write> ::= id <var_writeL>
+<var_writeL> :: , <var_write> | 
+<comando> ::= 		read ( <var_read> ) |
+				 	write ( <var_write> ) |
+			 	 	for id := <expressao> to <expressao> do begin <sentencas> end |
+			 	 	repeat <sentencas> until ( <condicao> ) |
+					while ( <condicao> ) do begin <sentencas> end |
+					if ( <condicao> ) then begin <sentencas> end <pfalsa> |
+					id := <expressao> |
+					id <argumentos>
+<argumentos> ::= ( <lista_arg> ) | 
+<lista_arg> ::= <expressao> <lista_argL>
+<lista_argL> ::= , <lista_arg> | 
+<condicao> ::= <expressao> <relacao> <expressao>
+<pfalsa> ::= else begin <sentencas> end | 
+<relacao> ::= = | > | < | >= | < <relacaoL>
+<relacaoL> ::= = | >
+<expressao> ::= <termo><expressaoL>
+<expressaoL> ::= + <termo> <expressaoL> | - <termo> <expressaoL> | 
+<termo> ::= <fator> <termoL>
+<termoL> ::= * <fator> <termoL> | / <fator> <termoL> | 
+<fator> ::= id <fatorL> | num | ( <expressao> )
+<fatorL> ::= <argumentos> | 
+
+
+
+id -> letra (letra | digito)*
+num -> digito+ | digito+ . digito+
