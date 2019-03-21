@@ -1,3 +1,4 @@
+			------- Murilo 
 <programa> ::= program id <corpo> •
 <corpo> ::= <declara> <rotina> begin <sentencas> end
 <declara> ::= var <dvar> <declara> | 
@@ -15,12 +16,6 @@
 <lista_id> ::= id <listaidL>
 <lista_idL> = , id <lista_idL> | 
 <tipo_funcao> ::= integer | real
-<sentencas> ::= <comando> <sentencasL>
-<sentencasL> ::= ; <sentencas> | 
-<var_read> ::= id <var_readL>
-<var_readL> ::= , <var_read> | 
-<var_write> ::= id <var_writeL>
-<var_writeL> :: , <var_write> | 
 <comando> ::= 		read ( <var_read> ) |
 				 	write ( <var_write> ) |
 			 	 	for id := <expressao> to <expressao> do begin <sentencas> end |
@@ -29,6 +24,14 @@
 					if ( <condicao> ) then begin <sentencas> end <pfalsa> |
 					id := <expressao> |
 					id <argumentos>
+
+					---Francisco
+<sentencas> ::= <comando> <sentencasL>
+<sentencasL> ::= ; <sentencas> | 
+<var_read> ::= id <var_readL>
+<var_readL> ::= , <var_read> | 
+<var_write> ::= id <var_writeL>
+<var_writeL> :: , <var_write> | 
 <argumentos> ::= ( <lista_arg> ) | 
 <lista_arg> ::= <expressao> <lista_argL>
 <lista_argL> ::= , <lista_arg> | 
