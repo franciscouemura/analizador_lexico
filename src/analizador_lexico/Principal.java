@@ -5,6 +5,8 @@
  */
 package analizador_lexico;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author framc
@@ -22,9 +24,14 @@ public class Principal extends javax.swing.JFrame {
     int coluna = 0;
     int index = 0;
     int lastLine = 0;
-
     String texto;
-
+    Lexema lexema;
+    Boolean erro;
+    private ArrayList<String> palavrasReservadas = new ArrayList<>();
+    
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -199,9 +206,9 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
         texto = jTextPaneFonte.getText().toString();
-        while(index < texto.length()){
+        //while(index < texto.length()){
             analisadorLexico(texto);
-        }
+        //}
 
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
@@ -241,17 +248,37 @@ public class Principal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Principal().setVisible(true);
+                Principal p = new Principal();
+                p.setVisible(true);
+                p.palavrasReservadas.add("program");
+                p.palavrasReservadas.add("begin");
+                p.palavrasReservadas.add("end");
+                p.palavrasReservadas.add("var");
+                p.palavrasReservadas.add("integer");
+                p.palavrasReservadas.add("real");
+                p.palavrasReservadas.add("procedure");
+                p.palavrasReservadas.add("function");
+                p.palavrasReservadas.add("to");
+                p.palavrasReservadas.add("do");
+                p.palavrasReservadas.add("until");
+                p.palavrasReservadas.add("repeat");
+                p.palavrasReservadas.add("while");
+                p.palavrasReservadas.add("if");
+                p.palavrasReservadas.add("else"); 
             }
         });
-
+        
+        
+        
+        
     }
 
-    public void analisadorLexico(String texto) {
+    public Lexema analisadorLexico(String texto) {
         String a = String.format("%c", texto.charAt(index));
+        Lexema item=null;
         if (texto.charAt(index) > ' ') {
             coluna = index-lastLine;
-            Lexema item = classifica(a);
+            item = classifica(a);
             jTextAreaItensLexicos.setText(
                     String.format("%s(Linha: %d, Coluna: %d) - %s - %s = %s\n",
                             jTextAreaItensLexicos.getText(),
@@ -268,6 +295,7 @@ public class Principal extends javax.swing.JFrame {
             }
             index++;
         }
+        return item;
     }
 
     public Lexema classifica(String a) {
