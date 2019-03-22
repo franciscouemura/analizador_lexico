@@ -274,26 +274,29 @@ public class Principal extends javax.swing.JFrame {
     }
 
     public Lexema analisadorLexico(String texto) {
-        String a = String.format("%c", texto.charAt(index));
         Lexema item=null;
-        if (texto.charAt(index) > ' ') {
-            coluna = index-lastLine;
-            item = classifica(a);
-            jTextAreaItensLexicos.setText(
-                    String.format("%s(Linha: %d, Coluna: %d) - %s - %s = %s\n",
-                            jTextAreaItensLexicos.getText(),
-                             item.getLinha()+1, 
-                            item.getColuna()+1, 
-                            item.getDescricao(),
-                            item.getClasse(),
-                            item.getTexto())
-            );
-        } else {
-            if(texto.charAt(index) == '\n'){
-                linha++;
-                lastLine = index + 1;
+        if(index < texto.length()){
+            while(texto.charAt(index) <= ' ' && index < texto.length()){
+                if(texto.charAt(index) == '\n'){
+                    linha++;
+                    lastLine = index + 1;
+                }
+                index++;
             }
-            index++;
+            String a = String.format("%c", texto.charAt(index));
+            if (texto.charAt(index) > ' ' && index < texto.length()) {
+                coluna = index-lastLine;
+                item = classifica(a);
+                jTextAreaItensLexicos.setText(
+                        String.format("%s(Linha: %d, Coluna: %d) - %s - %s = %s\n",
+                                jTextAreaItensLexicos.getText(),
+                                 item.getLinha()+1, 
+                                item.getColuna()+1, 
+                                item.getDescricao(),
+                                item.getClasse(),
+                                item.getTexto())
+                );
+            }
         }
         return item;
     }
