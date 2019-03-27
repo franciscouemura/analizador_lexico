@@ -3,13 +3,14 @@
 <corpo> ::= <declara> <rotina> begin <sentencas> end
 <declara> ::= var <dvar> <declara> | 
 <dvar> ::= <variaveis> : <dvarL> 
-<dvarL> ::= <tipo_var> ; <dvar> | <tipo_var>
+<dvarL> ::= <tipo_var> <dvarLL>
+<dvarLL> ::= ; <dvar> | 
 <tipo_var> ::= integer | real
 <variaveis> ::= id <variaveisL>
 <variaveisL> ::= , id <variaveisL> | 
-<rotina> ::= <procedimento> | <funcao> | 
-<procedimento> ::= procedure id <parametros> ; <corpo> ; <rotina>
-<funcao> ::= function id <parametros> : <tipo_funcao> ; <corpo> ; <rotina>
+<rotina> ::= procedure <procedimento> | function <funcao> | 
+<procedimento> ::= id <parametros> ; <corpo> ; <rotina>
+<funcao> ::= id <parametros> : <tipo_funcao> ; <corpo> ; <rotina>
 <parametros> ::= ( <lista_parametros> ) | 
 <lista_parametros> ::= <lista_id> : <tipo_var> <lista_paremetrosL>
 <lista_parametrosL> ::=  ; <lista_parametros> | 
@@ -22,9 +23,8 @@
 			 	 	repeat <sentencas> until ( <condicao> ) |
 					while ( <condicao> ) do begin <sentencas> end |
 					if ( <condicao> ) then begin <sentencas> end <pfalsa> |
-					id := <expressao> |
-					id <argumentos>
-
+					id <idL>
+idL ::= <argumentos> | := <expressao>
 					---Francisco
 <sentencas> ::= <comando> <sentencasL>
 <sentencasL> ::= ; <sentencas> | 
