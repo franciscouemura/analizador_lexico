@@ -1,22 +1,22 @@
-Program Fatorial
-Var
+program Fatorial
+var
 	N, F: integer;
-Function Fat(N : Integer) : Integer;
-Begin
-	If (N = 0) or (N = 1) then
+function Fat(N : integer) : integer;
+begin
+	if (N = 0) then
 		begin
 			Fat := 1;
-		End;
-	Else
-		Begin
+		end;
+	else
+		begin
 			Fat := N * Fat(N - 1);
-		End;
-End;
-Begin
+		end;
+end;
+begin
 	N := 0;
 	read( N );
-	If N >= 0 Then begin
+	if N >= 0 then begin
 		F := Fat(N);
-	End;
+	end;
 	write( F );
-End.
+end.

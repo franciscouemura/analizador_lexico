@@ -27,6 +27,7 @@ public class Principal extends javax.swing.JFrame {
     String texto;
     Lexema lexema;
     Boolean erro;
+    String errorDescription;
     private ArrayList<String> palavrasReservadas = new ArrayList<>();
     
     
@@ -206,9 +207,8 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
         texto = jTextPaneFonte.getText().toString();
-        //while(index < texto.length()){
-            analisadorLexico(texto);
-        //}
+        lexema = analisadorLexico(texto);
+        programa();
 
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
@@ -265,6 +265,8 @@ public class Principal extends javax.swing.JFrame {
                 p.palavrasReservadas.add("while");
                 p.palavrasReservadas.add("if");
                 p.palavrasReservadas.add("else"); 
+                p.palavrasReservadas.add("or");
+                p.palavrasReservadas.add("then");
             }
         });
         
@@ -434,6 +436,7 @@ public class Principal extends javax.swing.JFrame {
 
     public Lexema identificador() {
         String c = new String();
+        Lexema resultado=null;
         String leitor = String.format("%c", texto.charAt(index));
         do {
             c = leitor.substring(0);
@@ -443,7 +446,16 @@ public class Principal extends javax.swing.JFrame {
             }
 
         } while (leitor.matches("[\\w][\\w|\\d]+?") && index < texto.length());
-        Lexema resultado = new Lexema(c, "cId", "Identificador", linha, coluna);
+        
+        for(String s: palavrasReservadas){
+            if(s.toLowerCase().equals(c.toLowerCase())){
+                resultado = new Lexema(c, "cRes", "Palavra Reservada", linha, coluna);
+            }
+        }
+        if(resultado ==null){
+            resultado = new Lexema(c, "cId", "Identificador", linha, coluna);
+        }
+        
 
         return resultado;
     }
@@ -460,6 +472,653 @@ public class Principal extends javax.swing.JFrame {
         index++;
         Lexema resultado = new Lexema(leitor, "cStr", "String", linha, coluna);
         return resultado;
+    }
+    
+    
+    // -------------------ANALISADOR SITATICO---------------------------------
+    
+    
+//<programa> ::= program id <corpo> â€¢    
+public void programa(){
+	if(comparaClasseLexema("cRes","program")){
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cId",lexema.getTexto())){
+			lexema = analisadorLexico(texto);
+			corpo();
+			if(comparaClasseLexema("cPto",".")){
+				lexema = analisadorLexico(texto);
+			} else {
+				
+				imprimeErro("cPto", ".");
+			}
+		} else {
+			imprimeErro("cId",lexema.getTexto());
+		}
+	} else {
+		imprimeErro("cRes", "program");
+	}
+}
+
+    
+//<corpo> ::= <declara> <rotina> begin <sentencas> end
+public void corpo(){
+	declara();
+	rotina();
+	if(comparaClasseLexema("cRes","begin")){
+		lexema = analisadorLexico(texto);
+		sentencas();
+		if(comparaClasseLexema("cRes","end")){
+			lexema = analisadorLexico(texto);
+		} else {
+			imprimeErro("cRes","end");
+		}
+	} else {
+		imprimeErro("cRes", "begin");
+	}
+}
+
+    
+//<declara> ::= var <dvar> <declara> | ï¥
+public void declara(){
+	if(comparaClasseLexema("cRes","var")){
+		lexema = analisadorLexico(texto);
+		dvar();
+		declara();
+	}
+}
+    
+    
+    
+ //<dvar> ::= <variaveis> : <dvarL> 
+public void dvar(){
+	variaveis();
+	if(comparaClasseLexema("cDPto",":")){
+		lexema = analisadorLexico(texto);
+		dvarL();
+	} else {
+		imprimeErro("cDPto", ":");
+	}
+}
+   
+    
+//<dvarL> ::= <tipo_var> <dvarLL>
+public void dvarL(){
+	tipo_var();
+	dvarLL();
+}
+    
+    
+//<dvarLL> ::= ; <dvar> | ï¥
+public void dvarLL(){
+	if(comparaClasseLexema("cPVir",";")){
+        lexema= analisadorLexico(texto);
+         dvar();
+        }
+            
+}
+    
+    
+//<tipo_var> ::= integer | real
+public void tipo_var(){
+	if(comparaClasseLexema("cRes","integer") || comparaClasseLexema("cRes","real")){
+		lexema = analisadorLexico(texto);
+	} else {
+		imprimeErro("cNum","Numero (inteiro ou real)");
+	}
+}
+
+    
+//<variaveis> ::= id <variaveisL>
+public void variaveis(){
+	if(comparaClasseLexema("cId",lexema.getTexto())){
+		lexema = analisadorLexico(texto);
+		variaveisL();
+	} else {
+		imprimeErro("cId", "identificador");
+	}
+}
+
+    
+//<variaveisL> ::= , id <variaveisL> | ï¥
+public void variaveisL(){
+	if(comparaClasseLexema("cVir",",")){
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cId",lexema.getTexto())){
+			lexema = analisadorLexico(texto);
+			variaveisL();
+		} else {
+			imprimeErro("cId", "identificador");
+		}
+	}
+}
+    
+    
+//<rotina> ::= procedure <procedimento> | function <funcao> | ï¥
+public void rotina(){
+	if(comparaClasseLexema("cRes","procedure")){
+		lexema = analisadorLexico(texto);
+		procedimento();
+	} else if(comparaClasseLexema("cRes", "function")){
+		lexema = analisadorLexico(texto);
+		funcao();
+	}
+}
+    
+    
+//<procedimento> ::= id <parametros> ; <corpo> ; <rotina>
+public void procedimento(){
+	if(comparaClasseLexema("cId",lexema.getTexto())){
+		lexema = analisadorLexico(texto);
+		parametros();
+		if(comparaClasseLexema("cPVir",";")){
+			lexema = analisadorLexico(texto);
+			corpo();
+			if(comparaClasseLexema("cPVir",";")){
+				lexema = analisadorLexico(texto);
+				rotina();
+			} else {
+				imprimeErro("cPVir", ";");
+			}
+		} else {
+			imprimeErro("cPVir", ";");
+		}
+	} else {
+		imprimeErro("cId", "identificador");
+	}
+}
+
+    
+  
+  //<funcao> ::= id <parametros> : <tipo_funcao> ; <corpo> ; <rotina>
+public void funcao(){
+	if(comparaClasseLexema("cId",lexema.getTexto())){
+		lexema = analisadorLexico(texto);
+		parametros();
+		if(comparaClasseLexema("cDPto",":")){
+			lexema = analisadorLexico(texto);
+			tipo_funcao();
+			if(comparaClasseLexema("cPVir",";")){
+				lexema = analisadorLexico(texto);
+				corpo();
+				if(comparaClasseLexema("cPVir",";")){
+					lexema = analisadorLexico(texto);
+					rotina();
+				} else {
+					imprimeErro("cPVir", ";");
+				}
+			} else {
+				imprimeErro("cPVir", ";");
+			}
+		} else {
+			imprimeErro("cPVir", ";");
+		}
+	} else {
+		imprimeErro("cId", "identificador");
+	}
+}
+  
+    
+    
+    //<parametros> ::= ( <lista_parametros> ) | ï¥
+public void parametros(){
+	if(comparaClasseLexema("cLPar","(")){
+		lexema = analisadorLexico(texto);
+		lista_parametros();
+		if(comparaClasseLexema("cRPar", ")")){
+			lexema = analisadorLexico(texto);
+		} else {
+			imprimeErro("cRPar",")");
+		}
+	}
+}
+
+    
+    
+    
+    //<lista_parametros> ::= <lista_id> : <tipo_var> <lista_paremetrosL>
+    public void lista_parametros(){
+	lista_id();
+	if(comparaClasseLexema("cDPto",":")){
+		lexema = analisadorLexico(texto);
+		tipo_var();
+		lista_parametrosL();
+	} else {
+		imprimeErro("cDPto", ":");
+	}
+}
+
+   
+//<lista_parametrosL> ::=  ; <lista_parametros> | ï¥
+public void lista_parametrosL(){
+	if(comparaClasseLexema("cPVir", ";")){
+		lexema = analisadorLexico(texto);
+		lista_parametros();
+	}
+}
+    
+    
+//<lista_id> ::= id <listaidL>
+public void lista_id(){
+	if(comparaClasseLexema("cId", lexema.getTexto())){
+		lexema = analisadorLexico(texto);
+		lista_idL();
+	} else {
+		imprimeErro("cId","identificador");
+	}
+}
+    
+    
+    
+//<lista_idL> = , id <lista_idL> | ï¥
+public void lista_idL(){
+	if(comparaClasseLexema("cVir",",")){
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cId", lexema.getTexto())){
+			lexema = analisadorLexico(texto);
+			lista_idL();
+		} else {
+			imprimeErro("cId", "identificador");
+		}
+	}
+}
+
+    
+
+//<tipo_funcao> ::= integer | real
+public void tipo_funcao(){
+	if(comparaClasseLexema("cRes", lexema.getTexto())){
+		lexema = analisadorLexico(texto);
+	} else {
+		imprimeErro("cRes", "real ou integer");
+	}
+}
+
+
+//<comando> ::= 		read ( <var_read> ) |
+public void comando(){
+	if(comparaClasseLexema("cRes", "read")){
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cLPar", "(")){
+			lexema = analisadorLexico(texto);
+			var_read();
+			if(comparaClasseLexema("cRPar", ")")){
+				lexema = analisadorLexico(texto);
+			} else {
+				imprimeErro("cRPar", ")");
+			}
+		} else {
+			imprimeErro("cLPar", "(");
+		}
+	} else if(comparaClasseLexema("cRes", "write")) {	//					 	write ( <var_write> ) |
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cLPar", "(")){
+			lexema = analisadorLexico(texto);
+			var_write();
+			if(comparaClasseLexema("cRPar", ")")){
+				lexema = analisadorLexico(texto);
+			} else {
+				imprimeErro("cRPar", ")");
+			}
+		} else {
+			imprimeErro("cLPar", "(");
+		}
+	} else if(comparaClasseLexema("cRes", "for")) {	//				 	 	for id := <expressao> to <expressao> do begin <sentencas> end |
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cId", lexema.getTexto())){
+			lexema = analisadorLexico(texto);
+			if(comparaClasseLexema("cAtr",":=")){
+				lexema = analisadorLexico(texto);
+				expressao();
+				if(comparaClasseLexema("cRes", "to")){
+					lexema = analisadorLexico(texto);
+					expressao();
+					if(comparaClasseLexema("cRes", "do")){
+						lexema = analisadorLexico(texto);
+						if(comparaClasseLexema("cRes", "begin")){
+							lexema = analisadorLexico(texto);
+							sentencas();
+							if(comparaClasseLexema("cRes", "end")){
+								lexema = analisadorLexico(texto);
+							} else {
+								imprimeErro("cRes", "end");
+							}
+						} else {
+							imprimeErro("cRes", "begin");
+						}
+					} else {
+						imprimeErro("cRes", "do");
+					}
+				} else {
+					imprimeErro("cRes", "to");
+				}
+			} else {
+				imprimeErro("cAtr", ":=");
+			}
+		} else {
+			imprimeErro("cId","identificador");
+		}
+	} else if(comparaClasseLexema("cRes", "repeat")) {	//				 	 	repeat <sentencas> until ( <condicao> ) |
+		lexema = analisadorLexico(texto);
+		sentencas();
+		if(comparaClasseLexema("cRes", "until")){
+			lexema = analisadorLexico(texto);
+			if(comparaClasseLexema("cLPar", "(")){
+				lexema = analisadorLexico(texto);
+				condicao();
+				if(comparaClasseLexema("cRPar", ")")){
+					lexema = analisadorLexico(texto);
+				} else {
+					imprimeErro("cRPar", ")");
+				}
+			} else {
+				imprimeErro("cLPar", "(");
+			}
+		} else {
+			imprimeErro("cRes", "until");
+		}
+	} else if(comparaClasseLexema("cRes", "while")){	//				while ( <condicao> ) do begin <sentencas> end |
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cLPar", "(")){
+			lexema = analisadorLexico(texto);
+			condicao();
+			if(comparaClasseLexema("cRPar", ")")){
+				lexema = analisadorLexico(texto);
+				if(comparaClasseLexema("cRes", "do")){
+					lexema = analisadorLexico(texto);
+					if(comparaClasseLexema("cRes", "begin")){
+						lexema = analisadorLexico(texto);
+						sentencas();
+						if(comparaClasseLexema("cRes", "end")){
+							lexema = analisadorLexico(texto);
+						} else {
+							imprimeErro("cRes", "end");
+						}
+					} else {
+						imprimeErro("cRes", "begin");
+					}
+				} else {
+					imprimeErro("cRes", "do");
+				}
+			} else {
+				imprimeErro("cRPar", ")");
+			}
+		} else {
+			imprimeErro("cLPar", "(");
+		}
+	} else if(comparaClasseLexema("cRes", "if")){	//				if ( <condicao> ) then begin <sentencas> end <pfalsa> |
+		lexema = analisadorLexico(texto);
+		if(comparaClasseLexema("cLPar", "(")){
+			lexema = analisadorLexico(texto);
+			condicao();
+			if(comparaClasseLexema("cRPar", ")")){
+				lexema = analisadorLexico(texto);
+				if(comparaClasseLexema("cRes", "then")){
+					lexema = analisadorLexico(texto);
+					if(comparaClasseLexema("cRes", "begin")){
+						lexema = analisadorLexico(texto);
+						sentencas();
+						if(comparaClasseLexema("cRes", "end")){
+							lexema = analisadorLexico(texto);
+							pfalsa();
+						} else {
+							imprimeErro("cRes", "end");
+						}
+					} else {
+						imprimeErro("cRes", "begin");
+					}
+				} else {
+					imprimeErro("cRes", "then");
+				}
+			} else {
+				imprimeErro("cRPar", ")");
+			}
+		} else {
+			imprimeErro("cLPar", "(");
+		}
+	} else if(comparaClasseLexema("cId", lexema.getTexto())){	//	id <idL>
+		lexema = analisadorLexico(texto);
+		idL();
+	} else {
+		imprimeErro("com",lexema.getTexto());
+	}
+}
+
+    
+    
+    //	<idL> ::= <argumentos> | := <expressao>
+
+public void idL(){
+	if(comparaClasseLexema("cAtr", ":=")){
+		lexema = analisadorLexico(texto);
+		expressao();
+	} else {
+		argumentos();
+	}
+}
+
+    
+    //<sentencas> ::= <comando> <sentencasL>]
+    public void sentencas(){
+        comando();
+        sentencasL();
+    }
+    
+   public void sentencasL(){
+       if(comparaClasseLexema("cPVir",";")){
+           lexema=analisadorLexico(texto);
+           sentencas();
+       }else{
+           imprimeErro("cPVir",";");
+       }
+   }
+   
+   public void var_read(){
+       if(comparaClasseLexema("cId", lexema.getTexto())){
+           lexema = analisadorLexico(texto);
+           var_readL();
+       }else{
+           imprimeErro("cId", lexema.getTexto());
+       }
+   }
+   
+   public void var_readL(){
+       if(comparaClasseLexema("cVir", ",")){
+           lexema = analisadorLexico(texto);
+           var_read();
+       }
+   }
+    
+   public void var_write(){
+       if(comparaClasseLexema("cId", lexema.getTexto())){
+           lexema=analisadorLexico(texto);
+           var_writeL();
+       }else{
+           imprimeErro("cId",lexema.getTexto());
+       }
+   }
+    
+   public void var_writeL(){
+       if(comparaClasseLexema("cVir", ",")){
+           lexema=analisadorLexico(texto);
+           var_write();
+       }else{
+           imprimeErro("cVir", lexema.getTexto());
+       }
+   }
+    
+   public void argumentos(){
+       if(comparaClasseLexema("cLPar", "(")){
+           lexema=analisadorLexico(texto);
+           lista_arg();
+           if(comparaClasseLexema("cRPar", ")")){}
+            else{
+               imprimeErro("cRPar", lexema.getTexto());
+           }
+       }else{
+           imprimeErro("cLPar", lexema.getTexto());
+       }
+   }
+   
+   public void lista_arg(){
+       expressao();
+       lista_argL();
+   }
+   
+   public void lista_argL(){
+       if(comparaClasseLexema("cVir", ",")){
+           lexema=analisadorLexico(texto);
+           lista_arg();
+       }else{
+           imprimeErro("cVir", lexema.getTexto());
+       }
+   }
+   
+   public void condicao(){
+       expressao();
+       relacao();
+       expressao();
+   }
+   
+   public void pfalsa(){
+       if(comparaClasseLexema("cRes", "else")){
+           lexema = analisadorLexico(texto);
+           if(comparaClasseLexema("cRes", "begin")){
+               lexema = analisadorLexico(texto);
+               sentencas();
+               lexema= analisadorLexico(texto);
+               if(comparaClasseLexema("cRes","end")){
+                   lexema = analisadorLexico(texto);
+               }else{
+                   imprimeErro("cRes", "end");
+               }
+           }else{
+               imprimeErro("cRes", "begin");
+           }
+      }else{
+           imprimeErro("cRes", "else");
+       }
+   }
+   
+   //aqui
+   public void relacao(){
+       if(comparaClasseLexema("cEQ", "=")){
+           lexema=analisadorLexico(texto);
+       }else{
+           if(comparaClasseLexema("cGT", ">")){
+               lexema=analisadorLexico(texto);
+           }else{
+               if(comparaClasseLexema("cLT", "<")){
+                   lexema = analisadorLexico(texto);
+                  
+               }else{
+                   if(comparaClasseLexema("cGE", ">=")){
+                       lexema=analisadorLexico(texto);
+                   }else{
+                       if(comparaClasseLexema("cLE", "<=")){
+                           lexema=analisadorLexico(texto);
+                       }else{
+                           if(comparaClasseLexema("cNE", "<>")){
+                               lexema=analisadorLexico(texto);
+                           }else{
+                               imprimeErro("cEQ | cGT | cLT | cGE | cLE | cNE", "= | > | < | >= | <= | <>");
+                           }
+                       }
+                   }
+               }
+           }
+       }
+   }
+   
+   public void expressao(){
+       termo();
+       expressaoL();
+   }
+   
+   public void expressaoL(){
+       if(comparaClasseLexema("cAdd", "+")){
+           lexema=analisadorLexico(texto);
+           termo();
+           expressaoL();
+       }else{
+           if(comparaClasseLexema("cSub", "-")){
+               lexema = analisadorLexico(texto);
+               termo();
+               expressaoL();
+           }
+        }
+           
+   }
+   
+   public void termo(){
+        fator();
+        termoL();
+   }
+   
+   public void termoL(){
+       if(comparaClasseLexema("cMul", "*")){
+           lexema = analisadorLexico(texto);
+           fator();
+           termoL();
+       }else{
+           if(comparaClasseLexema("cDiv", "/")){
+               lexema = analisadorLexico(texto);
+               fator();
+               termoL();
+           }
+       }
+   }
+   
+   public void fator(){
+       if(comparaClasseLexema("cId", lexema.getTexto())){
+           lexema = analisadorLexico(texto);
+           fatorL();
+       }else{
+           if(comparaClasseLexema("cInt", lexema.getTexto()) || comparaClasseLexema("cReal", lexema.getTexto())){
+                lexema = analisadorLexico(texto);
+           }else{
+               if(comparaClasseLexema("cLPar", "(")){
+                   lexema=analisadorLexico(texto);
+                   expressao();
+                   if(comparaClasseLexema("cRpar", ")")){
+                       lexema=analisadorLexico(texto);
+                   }else{
+                       imprimeErro("cRpar", ")");
+                   }
+               }else{
+                   imprimeErro("cLPar | cInt | cId", "( | Inteiro | Identificador");
+               }
+           }
+               
+       }
+   }
+   
+   
+   public void fatorL(){
+       argumentos();
+   }
+   
+    public boolean comparaClasseLexema(String classe, String texto){
+	boolean v = false;
+	if(lexema.getClasse().equals(classe) && lexema.getTexto().equals(texto))
+		v = true;
+	return v;
+    }
+
+    public void imprimeErro(String classe, String description){
+        erro = true;
+        System.out.println("Na linha "+ (lexema.getLinha()+1)+" :\n");
+        if(classe.equals("com")){
+            errorDescription = String.format("Comando '%s' não reconhecido", description);
+        } else{
+            if(classe.matches("cRes\\w*")){
+                errorDescription = String.format("Palavra reservada %s esperado.\n", description);
+            } else {
+                errorDescription = String.format("'%s' esperado.\n", description);
+                }
+            }
+       
+        System.out.println(errorDescription);
+    
     }
 
 
