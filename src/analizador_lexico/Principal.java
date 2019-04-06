@@ -209,6 +209,9 @@ public class Principal extends javax.swing.JFrame {
         texto = jTextPaneFonte.getText().toString();
         lexema = analisadorLexico(texto);
         programa();
+        index = 0;
+        linha = 0;
+        coluna = 0;
 
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
@@ -878,8 +881,6 @@ public void comando(){
 	} else if(comparaClasseLexema("cId", lexema.getTexto())){	//	id <idL>
 		lexema = analisadorLexico(texto);
 		idL();
-	} else {
-		imprimeErro("com",lexema.getTexto());
 	}
 }
 
@@ -907,8 +908,6 @@ public void idL(){
        if(comparaClasseLexema("cPVir",";")){
            lexema=analisadorLexico(texto);
            sentencas();
-       }else{
-           imprimeErro("cPVir",";");
        }
    }
    
@@ -950,12 +949,12 @@ public void idL(){
        if(comparaClasseLexema("cLPar", "(")){
            lexema=analisadorLexico(texto);
            lista_arg();
-           if(comparaClasseLexema("cRPar", ")")){}
-            else{
-               imprimeErro("cRPar", lexema.getTexto());
+           if(comparaClasseLexema("cRPar", ")")){
+               lexema = analisadorLexico(texto);
            }
-       }else{
-           imprimeErro("cLPar", lexema.getTexto());
+            else{
+               imprimeErro("cRPar", ")");
+           }
        }
    }
    
@@ -968,8 +967,6 @@ public void idL(){
        if(comparaClasseLexema("cVir", ",")){
            lexema=analisadorLexico(texto);
            lista_arg();
-       }else{
-           imprimeErro("cVir", lexema.getTexto());
        }
    }
    
@@ -985,7 +982,6 @@ public void idL(){
            if(comparaClasseLexema("cRes", "begin")){
                lexema = analisadorLexico(texto);
                sentencas();
-               lexema= analisadorLexico(texto);
                if(comparaClasseLexema("cRes","end")){
                    lexema = analisadorLexico(texto);
                }else{
@@ -994,9 +990,7 @@ public void idL(){
            }else{
                imprimeErro("cRes", "begin");
            }
-      }else{
-           imprimeErro("cRes", "else");
-       }
+      }
    }
    
    //aqui
@@ -1117,7 +1111,7 @@ public void idL(){
                 }
             }
        
-        System.out.println(errorDescription);
+        System.out.println(errorDescription + " \n " + lexema.getTexto());
     
     }
 
