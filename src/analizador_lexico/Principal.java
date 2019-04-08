@@ -259,17 +259,27 @@ public class Principal extends javax.swing.JFrame {
                 p.palavrasReservadas.add("var");
                 p.palavrasReservadas.add("integer");
                 p.palavrasReservadas.add("real");
+                p.palavrasReservadas.add("array");
+                p.palavrasReservadas.add("of");
                 p.palavrasReservadas.add("procedure");
                 p.palavrasReservadas.add("function");
+                p.palavrasReservadas.add("read");
+                p.palavrasReservadas.add("white");
+                p.palavrasReservadas.add("for");
                 p.palavrasReservadas.add("to");
                 p.palavrasReservadas.add("do");
                 p.palavrasReservadas.add("until");
                 p.palavrasReservadas.add("repeat");
                 p.palavrasReservadas.add("while");
                 p.palavrasReservadas.add("if");
+                p.palavrasReservadas.add("then");
                 p.palavrasReservadas.add("else"); 
                 p.palavrasReservadas.add("or");
-                p.palavrasReservadas.add("then");
+                p.palavrasReservadas.add("and");
+                p.palavrasReservadas.add("not");
+                p.palavrasReservadas.add("true");
+                p.palavrasReservadas.add("false");
+                
             }
         });
         
