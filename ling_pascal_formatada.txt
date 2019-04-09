@@ -48,5 +48,87 @@ idL ::= <argumentos> | := <expressao>
 
 
 
-id -> letra (letra | digito)*
-num -> digito+ | digito+ . digito+
+id 				-> letra (letra | digito)*
+num 				-> digito+ | digito+ . digito+
+
+
+
+####--------Correções---------#####
+legenda:
+					-> m = 	modificar funcao já existente
+					-> a = 	adicionar funcao nova
+
+
+<corpo> ::= <declara> <rotina> <bloco> 				-> m
+
+<bloco> ::= begin <sentencas> end 				-> a
+
+<dvar> ::= <variaveis> : <tipo> ; <dvarL> 				-> m
+<dvarL> ::= <dvar> | 
+
+<tipo> ::= <tipo_simples> | array <tipo_array> 				-> a
+
+<tipo_simples> ::= integer | real 				-> a
+
+<tipo_array> ::= [ <indice> ] of <tipo_simples> 				-> a
+
+<indice> ::= num 				-> a
+
+<procedimento> ::= procedure id <parametros> ; <corpo> ; <rotina> 				-> m
+
+<funcao> ::= function id <parametros> : <tipo_simples> ; <corpo> ; <rotina> 				-> m
+
+<var_read> ::= id_variavel <var_readL>				-> a
+
+<var_readL> ::= , <var_read> | 				-> a
+
+<var_write> ::= id_variavel 			-> a
+
+<var_writeL> ::= , <var_white> | 			-> a
+
+<comando> ::=			 													-> m
+				read ( <var_read> ) |
+				write ( <var_write> ) |
+				for id_variavel := <expressao> to <expressao> do <bloco> |
+				repeat <sentencas> until ( <expressao_logica> ) |
+				while ( <expressao_logica> ) do <bloco> |
+				if ( <expressao_logica> ) then <bloco> <pfalsa> |
+				id_variavel := <expressao> |
+				<chamada_procedimento>
+
+<chamada_procedimento> ::= id_procedimento <argumentos> 				-> a
+
+
+<pfalsa> ::= else <bloco> | 				-> m
+
+<expressao_logica> ::= <termo_logico> <expressao_logicaL>		-> a
+
+<expressao_logicaL> ::= or <termo_logico> <expressao_logicaL> | 			->a
+
+<termo_logico> ::= <fator_logico> <termo_logicoL>				-> a
+
+<termo_logicoL> ::= and <fator_logico> <termo_logicoL> | 
+
+<fator_logico> ::= <relacional> | ( <expressao_logica> ) | not	<fator_logico> | true | false			-> a
+
+<relacional> ::= <expressao> <relacao> <expressao>				-> a
+
+<expressao> ::= <termo> <expressaoL>				-> m
+
+<expressaoL> ::= <operador_adicao> <termo> <expressaoL> | 			-> m
+
+<operador_adicao> ::= + | -				-> a
+
+<termo> ::= <fator> <termoL>		-> m
+
+<termoL> ::= <operador_multiplicacao> <fator> <termoL> | 			-> m
+
+<operador_multiplicacao> ::= * | / | and -> a
+
+<funcao> ::= id_funcao <argumentos>		-> a
+
+<variavel> ::= id_variavel_simples | id_variavel_array [ <expressao> ]		-> a
+
+id 				-> letra (letra | digito)*
+
+num 				-> digito+ | digito+ . digito+
