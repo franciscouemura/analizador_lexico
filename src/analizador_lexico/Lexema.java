@@ -15,6 +15,33 @@ public class Lexema {
     private String descricao;
     private int linha;
     private int coluna;
+    private String tipo;
+    private String categoria;
+    private String endereco;
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
     
     public Lexema(String texto, String classe, String descricao, int linha, int coluna){
         this.texto = texto;

@@ -29,6 +29,7 @@ public class Principal extends javax.swing.JFrame {
     Boolean erro;
     String errorDescription;
     private ArrayList<String> palavrasReservadas = new ArrayList<>();
+    private ArrayList<Lexema> detTipo = new ArrayList<>();
     
     
     
@@ -212,6 +213,7 @@ public class Principal extends javax.swing.JFrame {
         index = 0;
         linha = 0;
         coluna = 0;
+        
 
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
@@ -401,6 +403,15 @@ public class Principal extends javax.swing.JFrame {
                                                                     if (a.equals(".")) {
                                                                         item = new Lexema(a, "cPto", "Ponto", linha, coluna);
                                                                         index++;
+                                                                    } else {
+                                                                        if(a.equals("[")) {
+                                                                            item = new Lexema(a, "cLCol", "Colchete esquerdo",linha, coluna);
+                                                                            index++;
+                                                                        } else {
+                                                                            if(a.equals("]")) {
+                                                                                item = new Lexema(a, "cRCol", "Colchete direito", linha, coluna);
+                                                                            }
+                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -491,11 +502,13 @@ public class Principal extends javax.swing.JFrame {
     // -------------------ANALISADOR SITATICO---------------------------------
     
     
-//<programa> ::= program id <corpo> â€¢    
+//<programa> ::= program id <corpo> .
 public void programa(){
 	if(comparaClasseLexema("cRes","program")){
 		lexema = analisadorLexico(texto);
 		if(comparaClasseLexema("cId",lexema.getTexto())){
+                        lexema.setCategoria("program");
+                        insereTabela();
 			lexema = analisadorLexico(texto);
 			corpo();
 			if(comparaClasseLexema("cPto",".")){
@@ -517,19 +530,23 @@ public void programa(){
 public void corpo(){
 	declara();
 	rotina();
-	if(comparaClasseLexema("cRes","begin")){
-		lexema = analisadorLexico(texto);
-		sentencas();
-		if(comparaClasseLexema("cRes","end")){
-			lexema = analisadorLexico(texto);
-		} else {
-			imprimeErro("cRes","end");
-		}
-	} else {
-		imprimeErro("cRes", "begin");
-	}
+	bloco();
 }
 
+//<bloco> ::= begin <sentencas> end
+public void bloco(){
+    if(comparaClasseLexema("cRes","begin")){
+            lexema = analisadorLexico(texto);
+            sentencas();
+            if(comparaClasseLexema("cRes","end")){
+                    lexema = analisadorLexico(texto);
+            } else {
+                    imprimeErro("cRes","end");
+            }
+    } else {
+            imprimeErro("cRes", "begin");
+    }
+}
     
 //<declara> ::= var <dvar> <declara> | ï¥
 public void declara(){
@@ -542,12 +559,18 @@ public void declara(){
     
     
     
- //<dvar> ::= <variaveis> : <dvarL> 
+ //<dvar> ::= <variaveis> : <tipo> ; <dvarL> 
 public void dvar(){
 	variaveis();
 	if(comparaClasseLexema("cDPto",":")){
 		lexema = analisadorLexico(texto);
-		dvarL();
+		tipo();
+                if(comparaClasseLexema("cPVir", ";")){
+                    lexema = analisadorLexico(texto);
+                    dvarL();
+                } else {
+                    imprimeErro("cPVir", ";");
+                }
 	} else {
 		imprimeErro("cDPto", ":");
 	}
@@ -556,34 +579,84 @@ public void dvar(){
     
 //<dvarL> ::= <tipo_var> <dvarLL>
 public void dvarL(){
-	tipo_var();
-	dvarLL();
+	dvar();
 }
     
     
-//<dvarLL> ::= ; <dvar> | ï¥
-public void dvarLL(){
-	if(comparaClasseLexema("cPVir",";")){
-        lexema= analisadorLexico(texto);
-         dvar();
-        }
-            
-}
+////<dvarLL> ::= ; <dvar> | ï¥
+//public void dvarLL(){
+//	if(comparaClasseLexema("cPVir",";")){
+//        lexema= analisadorLexico(texto);
+//         dvar();
+//        }
+//            
+//}
     
     
-//<tipo_var> ::= integer | real
-public void tipo_var(){
-	if(comparaClasseLexema("cRes","integer") || comparaClasseLexema("cRes","real")){
-		lexema = analisadorLexico(texto);
-	} else {
-		imprimeErro("cNum","Numero (inteiro ou real)");
-	}
+////<tipo_var> ::= integer | real
+//public void tipo_var(){
+//	if(comparaClasseLexema("cRes","integer") || comparaClasseLexema("cRes","real")){
+//		lexema = analisadorLexico(texto);
+//	} else {
+//		imprimeErro("cNum","Numero (inteiro ou real)");
+//	}
+//}
+
+//<tipo> ::= <tipo_simples> | array <tipo_array>
+public void tipo(){
+    if(comparaClasseLexema("cRes", "array")){
+        lexema = analisadorLexico(texto);
+        tipo_array();
+    } else {
+        tipo_simples();
+    }
 }
 
+//<tipo_simples> ::= integer | real
+public void tipo_simples(){
+    if(comparaClasseLexema("cRes", "real") || comparaClasseLexema("cRes", "integer")){
+        lexema = analisadorLexico(texto);
+    } else {
+        imprimeErro("cRes", "real | integer");
+    }
+}
+
+//<tipo_array> ::= [ <indice> ] of <tipo_simples>
+public void tipo_array(){
+    if(comparaClasseLexema("cLCol", "[")){
+        lexema = analisadorLexico(texto);
+        indice();
+        if(comparaClasseLexema("cRCol", "]")){
+            lexema = analisadorLexico(texto);
+            if(comparaClasseLexema("cRes", "of")){
+                lexema = analisadorLexico(texto);
+                tipo_simples();
+            } else {
+                imprimeErro("cRes", "of");
+            }
+        } else {
+            imprimeErro("cRCol", "]");
+        }
+    } else {
+        imprimeErro("cLCol", "[");
+    }
+}
     
+//<indice> ::= num
+public void indice(){
+    if(comparaClasseLexema("cInt", lexema.getTexto())){
+        lexema = analisadorLexico(texto);
+    } else {
+        imprimeErro("cInt", "Numero inteiro");
+    }
+}
+
+
+
 //<variaveis> ::= id <variaveisL>
 public void variaveis(){
 	if(comparaClasseLexema("cId",lexema.getTexto())){
+                insereTabela();
 		lexema = analisadorLexico(texto);
 		variaveisL();
 	} else {
@@ -649,7 +722,7 @@ public void funcao(){
 		parametros();
 		if(comparaClasseLexema("cDPto",":")){
 			lexema = analisadorLexico(texto);
-			tipo_funcao();
+			tipo_simples();
 			if(comparaClasseLexema("cPVir",";")){
 				lexema = analisadorLexico(texto);
 				corpo();
@@ -1123,6 +1196,10 @@ public void idL(){
        
         System.out.println(errorDescription + " \n " + lexema.getTexto());
     
+    }
+    
+    public void insereTabela(){
+        
     }
 
 
