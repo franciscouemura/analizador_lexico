@@ -896,11 +896,6 @@ public class Principal extends javax.swing.JFrame {
                             if(comparaClasseLexema("cRes", "do")){
                                 lexema = analisadorLexico(texto);
                                 bloco();
-                                if(comparaClasseLexema("cPVir", ";")){
-                                    lexema = analisadorLexico(texto);
-                                } else {
-                                    imprimeErro("cPVir", ";");
-                                }
                             } else {
                                 imprimeErro("cRes", "do");
                             }
@@ -945,11 +940,6 @@ public class Principal extends javax.swing.JFrame {
     				if(comparaClasseLexema("cRes", "do")){
     					lexema = analisadorLexico(texto);
     					bloco();
-                                        if(comparaClasseLexema("cPVir", ";")){
-                                            lexema = analisadorLexico(texto);
-                                        } else {
-                                            imprimeErro("cPVir", ";");
-                                        }
     				} else {
     					imprimeErro("cRes", "do");
     				}
@@ -969,11 +959,6 @@ public class Principal extends javax.swing.JFrame {
     				if(comparaClasseLexema("cRes", "then")){
     					lexema = analisadorLexico(texto);
     					bloco();
-                                        if(comparaClasseLexema("cPVir", ";")){
-                                            lexema = analisadorLexico(texto);
-                                        } else {
-                                            imprimeErro("cPVir", ";");
-                                        }
                                         pfalsa();
     				} else {
     					imprimeErro("cRes", "then");
@@ -1116,11 +1101,6 @@ public class Principal extends javax.swing.JFrame {
        if(comparaClasseLexema("cRes", "else")){
             lexema = analisadorLexico(texto);
             bloco();
-            if(comparaClasseLexema("cPVir", ";")){
-                lexema = analisadorLexico(texto);
-            } else {
-                imprimeErro("cPVir", ";");
-            }
       }
     }
 
