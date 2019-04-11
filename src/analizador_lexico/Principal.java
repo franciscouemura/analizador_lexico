@@ -6,6 +6,7 @@
 package analizador_lexico;
 
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -31,7 +32,7 @@ public class Principal extends javax.swing.JFrame {
     private ArrayList<String> palavrasReservadas = new ArrayList<>();
     private ArrayList<Lexema> detTipo = new ArrayList<>();
     
-    ArrayList<Lexema> table = new ArrayList<>();
+    ItemTabela[] table = new ItemTabela[17];
     
     
     
@@ -1321,21 +1322,42 @@ public class Principal extends javax.swing.JFrame {
     }
     
     public void insereTabela(){ //inserir lexema em uma tabela de simbolos
-        System.out.println("Texto: " + lexema.getTexto()
-                           +"\nCategoria: " + lexema.getCategoria()
-                           +"\nTipo: " + lexema.getTipo());
-        Lexema aux = lexema;
-        table.add(aux);
+        
+        int soma=0;
+        for(int i=0;i<lexema.getTexto().length();i++){
+            soma = soma+lexema.getTexto().charAt(i);
+        }
+        int hash = soma%17;
+        ItemTabela novoItem = new ItemTabela(lexema,null,null,hash);
+        if(table[hash]==null){
+            table[hash]=novoItem;
+        }else{
+            novoItem.insereProximo(table[hash], novoItem);
+        }
         
     }
 
     public boolean idInTable(String categoria, String textoLexema){      // verificar se existe um id na tabela de simbolos com o texto e a categoria
         boolean test = false;
-        for(Lexema l : table){
-            if(l.getCategoria().equals(categoria) && l.getTexto().equals(textoLexema))
-                test = true;
+        int soma=0;
+        for(int i=0;i<textoLexema.length();i++){
+            soma = soma+textoLexema.charAt(i);
+        }
+        int hash = soma%17;
+        if(table[hash]!=null){
+            test= table[hash].existe(table[hash],textoLexema);
         }
         return test;
+    }
+    
+    public void imprimeTabela(){
+        DefaultTableModel model = new DefaultTableModel();
+        jTableTabelaDeSimbolos.setModel(model);
+        model.addColumn("Lexema");
+        model.addColumn("Categoria");
+        model.addColumn("Tipo");
+        
+        model.addRow(new Object[]{table[0].getItem().getTexto(), table[0].getItem().getCategoria(), table[0].getItem().getTipo()});
     }
 
 
