@@ -5,6 +5,8 @@
  */
 package analizador_lexico;
 
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Francisco
@@ -60,15 +62,22 @@ public class ItemTabela {
         filho.anterior =pai;
     }
     
-    public boolean existe(ItemTabela pai,String lexema){
+    public boolean existe(ItemTabela pai,String lexema, String categoria){
         boolean resultado=true;
         if(pai==null){
             resultado=false;
         }else{
-            if(!pai.getItem().getTexto().equals(lexema)){
-                resultado = existe(pai.proximo,lexema);
+            if(!pai.getItem().getTexto().equals(lexema) || !pai.getItem().getCategoria().equals(categoria)){
+                resultado = existe(pai.proximo,lexema, categoria);
             }
         }
      return resultado;
+    }
+    
+    public void imprimeItensTabela(ItemTabela item, DefaultTableModel model){
+        if(item!=null){
+            model.addRow(new Object[]{item.getItem().getTexto(), item.getItem().getCategoria(), item.getItem().getTipo()});
+            imprimeItensTabela(item.proximo, model);
+        }
     }
 }

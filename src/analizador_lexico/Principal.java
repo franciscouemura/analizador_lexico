@@ -219,6 +219,7 @@ public class Principal extends javax.swing.JFrame {
         linha = 0;
         coluna = 0;
         erro = false;
+        imprimeTabela();
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
@@ -1345,7 +1346,7 @@ public class Principal extends javax.swing.JFrame {
         }
         int hash = soma%17;
         if(table[hash]!=null){
-            test= table[hash].existe(table[hash],textoLexema);
+            test= table[hash].existe(table[hash],textoLexema, categoria);
         }
         return test;
     }
@@ -1357,7 +1358,14 @@ public class Principal extends javax.swing.JFrame {
         model.addColumn("Categoria");
         model.addColumn("Tipo");
         
-        model.addRow(new Object[]{table[0].getItem().getTexto(), table[0].getItem().getCategoria(), table[0].getItem().getTipo()});
+        ItemTabela item=null;
+        
+        for(int i=0; i<17;i++){
+            if(table[i]!=null){
+                table[i].imprimeItensTabela(table[i], model);
+            }
+           
+        }
     }
 
 
