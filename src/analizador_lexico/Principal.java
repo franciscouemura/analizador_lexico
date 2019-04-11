@@ -60,6 +60,9 @@ public class Principal extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextAreaItensLexicos = new javax.swing.JTextArea();
         jTabbedPaneMepa = new javax.swing.JTabbedPane();
+        label1 = new java.awt.Label();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
+        textAreaMensagens = new java.awt.TextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuArquivo = new javax.swing.JMenu();
         jMenuItemNovo = new javax.swing.JMenuItem();
@@ -130,6 +133,12 @@ public class Principal extends javax.swing.JFrame {
         jTabbedPanePainel.addTab("Iten Léxicos", jScrollPane3);
         jTabbedPanePainel.addTab("Mepa", jTabbedPaneMepa);
 
+        label1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        label1.setText("Mensagem");
+
+        filler2.setBackground(new java.awt.Color(255, 255, 255));
+        filler2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
         jMenuArquivo.setText("Arquivo");
 
         jMenuItemNovo.setText("Novo");
@@ -173,20 +182,25 @@ public class Principal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jButtonNovo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonAbrir)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButtonSalvar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButtonCompilar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButtonExecutar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonSair)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonNovo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonAbrir)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonSalvar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonCompilar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonExecutar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonSair))
+                    .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+            .addComponent(filler2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(textAreaMensagens, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -199,8 +213,17 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(jButtonExecutar)
                     .addComponent(jButtonSair))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
+                .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+                .addGap(10, 10, 10)
+                .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(textAreaMensagens, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
+
+        label1.getAccessibleContext().setAccessibleName("labelMensagem");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -210,11 +233,12 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonExecutarActionPerformed
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
+        textAreaMensagens.setText("");
         texto = jTextPaneFonte.getText().toString();
         lexema = analisadorLexico(texto);
         programa();
         if(!erro)
-            System.out.println("Compilado com sucesso!\n");
+            textAreaMensagens.setText("Compilado com sucesso!\n");
         index = 0;
         linha = 0;
         coluna = 0;
@@ -1307,7 +1331,7 @@ public class Principal extends javax.swing.JFrame {
 
     public void imprimeErro(String classe, String description){
         erro = true;
-        System.out.println("Na linha "+ (lexema.getLinha()+1)+" :\n");
+        textAreaMensagens.setText(textAreaMensagens.getText().toString()+"Na linha "+ (lexema.getLinha()+1)+" :\n");
         if(classe.equals("com")){
             errorDescription = String.format("Comando '%s' não reconhecido", description);
         } else{
@@ -1318,7 +1342,9 @@ public class Principal extends javax.swing.JFrame {
                 }
             }
        
-        System.out.println(errorDescription + " \n " + lexema.getTexto());
+        
+        textAreaMensagens.setText(textAreaMensagens.getText().toString()+errorDescription + " \n " + lexema.getTexto()+"\n");
+        
     
     }
     
@@ -1370,6 +1396,7 @@ public class Principal extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JButton jButtonAbrir;
     private javax.swing.JButton jButtonCompilar;
     private javax.swing.JButton jButtonExecutar;
@@ -1398,5 +1425,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTable jTableTabelaDeSimbolos;
     private javax.swing.JTextArea jTextAreaItensLexicos;
     private javax.swing.JTextPane jTextPaneFonte;
+    private java.awt.Label label1;
+    private java.awt.TextArea textAreaMensagens;
     // End of variables declaration//GEN-END:variables
 }
