@@ -937,64 +937,34 @@ public class Principal extends javax.swing.JFrame {
                 } else {
                     imprimeErro("cId", "Variavel");
                 }
-    	} else if(comparaClasseLexema("cRes", "repeat")) {	//				 	 	repeat <sentencas> until ( <condicao> ) |
+    	} else if(comparaClasseLexema("cRes", "repeat")) {	//				 	 	repeat <sentencas> until <expressao_logica> |
     		lexema = analisadorLexico(texto);
     		sentencas();
     		if(comparaClasseLexema("cRes", "until")){
-    			lexema = analisadorLexico(texto);
-    			if(comparaClasseLexema("cLPar", "(")){
-    				lexema = analisadorLexico(texto);
-    				expressao_logica();
-    				if(comparaClasseLexema("cRPar", ")")){
-    					lexema = analisadorLexico(texto);
-    				} else {
-    					imprimeErro("cRPar", ")");
-    				}
-    			} else {
-    				imprimeErro("cLPar", "(");
-    			}
+                    lexema = analisadorLexico(texto);
+                    expressao_logica();
     		} else {
     			imprimeErro("cRes", "until");
     		}
-    	} else if(comparaClasseLexema("cRes", "while")){	//				while ( <condicao> ) do <bloco> |
+    	} else if(comparaClasseLexema("cRes", "while")){	//				while <expressao_logica> do <bloco> |
     		lexema = analisadorLexico(texto);
-    		if(comparaClasseLexema("cLPar", "(")){
-    			lexema = analisadorLexico(texto);
-    			expressao_logica();
-    			if(comparaClasseLexema("cRPar", ")")){
-    				lexema = analisadorLexico(texto);
-    				if(comparaClasseLexema("cRes", "do")){
-    					lexema = analisadorLexico(texto);
-    					bloco();
-    				} else {
-    					imprimeErro("cRes", "do");
-    				}
-    			} else {
-    				imprimeErro("cRPar", ")");
-    			}
-    		} else {
-    			imprimeErro("cLPar", "(");
-    		}
-    	} else if(comparaClasseLexema("cRes", "if")){	//				if ( <expressao_logica> ) then <bloco> <pfalsa> |
+                expressao_logica();
+                if(comparaClasseLexema("cRes", "do")){
+                        lexema = analisadorLexico(texto);
+                        bloco();
+                } else {
+                        imprimeErro("cRes", "do");
+                }
+    	} else if(comparaClasseLexema("cRes", "if")){	//				if <expressao_logica> then <bloco> <pfalsa> |
     		lexema = analisadorLexico(texto);
-    		if(comparaClasseLexema("cLPar", "(")){
-    			lexema = analisadorLexico(texto);
-    			expressao_logica();
-    			if(comparaClasseLexema("cRPar", ")")){
-    				lexema = analisadorLexico(texto);
-    				if(comparaClasseLexema("cRes", "then")){
-    					lexema = analisadorLexico(texto);
-    					bloco();
-                                        pfalsa();
-    				} else {
-    					imprimeErro("cRes", "then");
-    				}
-    			} else {
-    				imprimeErro("cRPar", ")");
-    			}
-    		} else {
-    			imprimeErro("cLPar", "(");
-    		}
+                expressao_logica();
+                if(comparaClasseLexema("cRes", "then")){
+                        lexema = analisadorLexico(texto);
+                        bloco();
+                        pfalsa();
+                } else {
+                        imprimeErro("cRes", "then");
+                }
     	} else if(comparaClasseLexema("cId", lexema.getTexto())){	//	id_variavel := <expressao> |
     		if(idInTable("Variavel", lexema.getTexto()) || idInTable("Funcao", lexema.getTexto())){
                     lexema = analisadorLexico(texto);
@@ -1165,6 +1135,9 @@ public class Principal extends javax.swing.JFrame {
         if(comparaClasseLexema("cLPar", "(")){
             lexema = analisadorLexico(texto);
             expressao_logica();
+            if(comparaClasseLexema("cRPar", ")")){
+                lexema = analisadorLexico(texto);
+            }
         } else if(comparaClasseLexema("cRes", "not")){
             lexema = analisadorLexico(texto);
             fator_logico();

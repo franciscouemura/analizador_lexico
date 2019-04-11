@@ -3,7 +3,7 @@ var
 	N, F: integer;
 function Fat(N : integer) : integer;
 begin
-	if (N = 0) then
+	if (N = 0) or (N = 1) then
 		begin
 			Fat := 1;
 		end
