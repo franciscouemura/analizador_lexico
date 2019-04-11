@@ -59,24 +59,24 @@ legenda:
 					-> a = 	adicionar funcao nova
 
 
-<corpo> ::= <declara> <rotina> <bloco> 				-> m
+<corpo> ::= <declara> <rotina> <bloco> 				-> m 	ok
 
-<bloco> ::= begin <sentencas> end 				-> a
+<bloco> ::= begin <sentencas> end 				-> a 	ok
 
-<dvar> ::= <variaveis> : <tipo> ; <dvarL> 				-> m
+<dvar> ::= <variaveis> : <tipo> ; <dvarL> 				-> m 	ok
 <dvarL> ::= <dvar> | 
 
-<tipo> ::= <tipo_simples> | array <tipo_array> 				-> a
+<tipo> ::= <tipo_simples> | array <tipo_array> 				-> a 	ok
 
-<tipo_simples> ::= integer | real 				-> a
+<tipo_simples> ::= integer | real 				-> a 	ok
 
-<tipo_array> ::= [ <indice> ] of <tipo_simples> 				-> a
+<tipo_array> ::= [ <indice> ] of <tipo_simples> 				-> a 	ok
 
-<indice> ::= num 				-> a
+<indice> ::= num 				-> a 	ok
 
-<procedimento> ::= procedure id <parametros> ; <corpo> ; <rotina> 				-> m
+<procedimento> ::= procedure id <parametros> ; <corpo> ; <rotina> 				-> m 	ok
 
-<funcao> ::= function id <parametros> : <tipo_simples> ; <corpo> ; <rotina> 				-> m
+<funcao> ::= function id <parametros> : <tipo_simples> ; <corpo> ; <rotina> 				-> m 	ok
 
 <var_read> ::= id_variavel <var_readL>				-> a
 
