@@ -29,7 +29,7 @@ public class Principal extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         
         fonte = new RSyntaxTextArea(20,60);
-        fonte.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+        fonte.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI);
         fonte.setCodeFoldingEnabled(true);
         
         sp = new RTextScrollPane(fonte);
