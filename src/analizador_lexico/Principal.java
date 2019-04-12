@@ -6,7 +6,11 @@
 package analizador_lexico;
 
 import java.util.ArrayList;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  *
@@ -14,11 +18,24 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Principal extends javax.swing.JFrame {
 
+    public RTextScrollPane sp;
+    public RSyntaxTextArea fonte;
     /**
      * Creates new form Principal
      */
     public Principal() {
         initComponents();
+        
+        this.setLocationRelativeTo(null);
+        
+        fonte = new RSyntaxTextArea(20,60);
+        fonte.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+        fonte.setCodeFoldingEnabled(true);
+        
+        sp = new RTextScrollPane(fonte);
+        sp.setName("Fonte");
+        jTabbedPanePainel.add(sp, 0);
+        jTabbedPanePainel.setSelectedIndex(0);
     }
 
     int linha = 0;
@@ -53,8 +70,6 @@ public class Principal extends javax.swing.JFrame {
         jButtonExecutar = new javax.swing.JButton();
         jButtonSair = new javax.swing.JButton();
         jTabbedPanePainel = new javax.swing.JTabbedPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPaneFonte = new javax.swing.JTextPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableTabelaDeSimbolos = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -79,6 +94,8 @@ public class Principal extends javax.swing.JFrame {
         jMenuSobre = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1000, 600));
+        setResizable(false);
 
         jButtonNovo.setText("Novo");
         jButtonNovo.addActionListener(new java.awt.event.ActionListener() {
@@ -106,10 +123,6 @@ public class Principal extends javax.swing.JFrame {
         });
 
         jButtonSair.setText("Sair");
-
-        jScrollPane1.setViewportView(jTextPaneFonte);
-
-        jTabbedPanePainel.addTab("Fonte", jScrollPane1);
 
         jTableTabelaDeSimbolos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -182,7 +195,7 @@ public class Principal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
+            .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.DEFAULT_SIZE, 877, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -213,13 +226,13 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(jButtonExecutar)
                     .addComponent(jButtonSair))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-                .addGap(10, 10, 10)
+                .addComponent(jTabbedPanePainel, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(textAreaMensagens, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(textAreaMensagens, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -234,7 +247,10 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
         textAreaMensagens.setText("");
-        texto = jTextPaneFonte.getText().toString();
+        texto = fonte.getText().toString();
+        jTableTabelaDeSimbolos.removeAll();
+        table = null;
+        table = new ItemTabela[17];
         lexema = analisadorLexico(texto);
         programa();
         if(!erro)
@@ -247,7 +263,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
-        jTextPaneFonte.setText("");
+        fonte.setText("");
         jTextAreaItensLexicos.setText("");
     }//GEN-LAST:event_jButtonNovoActionPerformed
 
@@ -262,12 +278,13 @@ public class Principal extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -500,7 +517,7 @@ public class Principal extends javax.swing.JFrame {
 
         } while (leitor.matches("[\\w][\\w|\\d]+?") && index < texto.length());
         
-        for(String s: palavrasReservadas){
+        for(String s: this.palavrasReservadas){
             if(s.toLowerCase().equals(c.toLowerCase())){
                 resultado = new Lexema(c, "cRes", "Palavra Reservada", linha, coluna);
             }
@@ -1388,7 +1405,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemSalvarComo;
     private javax.swing.JMenu jMenuProjeto;
     private javax.swing.JMenu jMenuSobre;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -1397,7 +1413,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPanePainel;
     private javax.swing.JTable jTableTabelaDeSimbolos;
     private javax.swing.JTextArea jTextAreaItensLexicos;
-    private javax.swing.JTextPane jTextPaneFonte;
     private java.awt.Label label1;
     private java.awt.TextArea textAreaMensagens;
     // End of variables declaration//GEN-END:variables
