@@ -545,10 +545,10 @@ public class Principal extends javax.swing.JFrame {
     }
     
     
-    // -------------------ANALISADOR SITATICO---------------------------------
+    // -------------------ANALISADOR SINTATICO---------------------------------
     
     
-    //<programa> ::= program id <corpo> .
+    //<programa> ::= program id A01 <corpo> . [A45]
     public void programa(){
     	if(comparaClasseLexema("cRes","program")){
     		lexema = analisadorLexico(texto);
@@ -572,7 +572,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
         
-    //<corpo> ::= <declara> <rotina> <bloco>
+    //<corpo> ::= <declara> <rotina> [A44] <bloco> [A46]
     public void corpo(){
     	declara();
     	rotina();
@@ -605,7 +605,7 @@ public class Principal extends javax.swing.JFrame {
         
         
         
-     //<dvar> ::= <variaveis> : <tipo> ; <dvarL> 
+     //<dvar> ::= <variaveis> : <tipo> [A02] ; <dvarL> 
     public void dvar(boolean dvar_controle){
     	if(comparaClasseLexema("cId", lexema.getTexto())){
             variaveis();
@@ -640,7 +640,7 @@ public class Principal extends javax.swing.JFrame {
     }
        
         
-    //<dvarL> ::= <tipo_var> <dvarLL>
+    //<dvarL> ::= <tipo_var> [A02] <dvarLL>
     public void dvarL(){
     	dvar(true);
     }
@@ -724,7 +724,7 @@ public class Principal extends javax.swing.JFrame {
 
 
 
-    //<variaveis> ::= id <variaveisL>
+    //<variaveis> ::= id [A03] <variaveisL>
     public void variaveis(){
     	if(comparaClasseLexema("cId",lexema.getTexto())){
             lexema.setCategoria("Variavel");
@@ -737,7 +737,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
         
-    //<variaveisL> ::= , id <variaveisL> | vazio
+    //<variaveisL> ::= , id [A03] <variaveisL> | vazio
     public void variaveisL(){
     	if(comparaClasseLexema("cVir",",")){
     		lexema = analisadorLexico(texto);
@@ -765,7 +765,7 @@ public class Principal extends javax.swing.JFrame {
     }
         
         
-    //<procedimento> ::= id <parametros> ; <corpo> ; <rotina>
+    //<procedimento> ::= id [A04] <parametros> [A48] ; <corpo> [A56] ; <rotina>
     public void procedimento(){
     	if(comparaClasseLexema("cId",lexema.getTexto())){
             lexema.setCategoria("Procedimento");
@@ -788,7 +788,7 @@ public class Principal extends javax.swing.JFrame {
     	}
     }
 
-      //<funcao> ::= id <parametros> : <tipo_simples> ; <corpo> ; <rotina>
+      //<funcao> ::= id [A05] <parametros> [A48] : <tipo_simples> [A47] ; <corpo> [A56] ; <rotina>
     public void funcao(){
     	if(comparaClasseLexema("cId",lexema.getTexto())){
             Lexema aux = lexema;
@@ -836,7 +836,7 @@ public class Principal extends javax.swing.JFrame {
         
         
         
-        //<lista_parametros> ::= <lista_id> : <tipo> <lista_paremetrosL>
+        //<lista_parametros> ::= <lista_id> : <tipo> [A06] <lista_paremetrosL>
         public void lista_parametros(){
     	lista_id();
     	if(comparaClasseLexema("cDPto",":")){
@@ -858,7 +858,7 @@ public class Principal extends javax.swing.JFrame {
     }
         
         
-    //<lista_id> ::= id <listaidL>
+    //<lista_id> ::= id [A07] <listaidL>
     public void lista_id(){
     	if(comparaClasseLexema("cId", lexema.getTexto())){
             detTipo.add(lexema);
@@ -871,7 +871,7 @@ public class Principal extends javax.swing.JFrame {
         
         
         
-    //<lista_idL> = , id <lista_idL> | vazio
+    //<lista_idL> = , id [A07] <lista_idL> | vazio
     public void lista_idL(){
     	if(comparaClasseLexema("cVir",",")){
             detTipo.add(lexema);
@@ -925,7 +925,7 @@ public class Principal extends javax.swing.JFrame {
     		} else {
     			imprimeErro("cLPar", "(");
     		}
-    	} else if(comparaClasseLexema("cRes", "for")) {	//				 	 	for id_variavel := <expressao> to <expressao> do <bloco> ; |
+    	} else if(comparaClasseLexema("cRes", "for")) {	//				 	 	for id_variavel [A57] := <expressao> [A11] to <expressao> [A12] do <bloco> [A13] ; |
     		lexema = analisadorLexico(texto);
     		if(comparaClasseLexema("cId", lexema.getTexto())){
                 if(idInTable("Variavel", lexema.getTexto())){
@@ -954,7 +954,7 @@ public class Principal extends javax.swing.JFrame {
                 } else {
                     imprimeErro("cId", "Variavel");
                 }
-    	} else if(comparaClasseLexema("cRes", "repeat")) {	//				 	 	repeat <sentencas> until <expressao_logica> |
+    	} else if(comparaClasseLexema("cRes", "repeat")) {	//				 	 	repeat [A14] <sentencas> until <expressao_logica> [A15] |
     		lexema = analisadorLexico(texto);
     		sentencas();
     		if(comparaClasseLexema("cRes", "until")){
@@ -963,7 +963,7 @@ public class Principal extends javax.swing.JFrame {
     		} else {
     			imprimeErro("cRes", "until");
     		}
-    	} else if(comparaClasseLexema("cRes", "while")){	//				while <expressao_logica> do <bloco> |
+    	} else if(comparaClasseLexema("cRes", "while")){	//				while [A16] <expressao_logica> [A17] do <bloco> [A18] |
     		lexema = analisadorLexico(texto);
                 expressao_logica();
                 if(comparaClasseLexema("cRes", "do")){
@@ -972,7 +972,7 @@ public class Principal extends javax.swing.JFrame {
                 } else {
                         imprimeErro("cRes", "do");
                 }
-    	} else if(comparaClasseLexema("cRes", "if")){	//				if <expressao_logica> then <bloco> <pfalsa> |
+    	} else if(comparaClasseLexema("cRes", "if")){	//				if <expressao_logica> [A19] then <bloco> [A20] <pfalsa> [A21]|
     		lexema = analisadorLexico(texto);
                 expressao_logica();
                 if(comparaClasseLexema("cRes", "then")){
@@ -982,14 +982,27 @@ public class Principal extends javax.swing.JFrame {
                 } else {
                         imprimeErro("cRes", "then");
                 }
-    	} else if(comparaClasseLexema("cId", lexema.getTexto())){	//	id_variavel := <expressao> |
+    	} else if(comparaClasseLexema("cId", lexema.getTexto())){	//	id_variavel [A49] := <expressao> [A22] |
+                                                                                                // OK
     		if(idInTable("Variavel", lexema.getTexto()) || idInTable("Funcao", lexema.getTexto())){
+                if(idInTable("Variavel", lexema.getTexto())){
+                    A49();
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr", ":=")){
                         lexema = analisadorLexico(texto);
                         expressao();
                     }
-               } else if(idInTable("Procedimento", lexema.getTexto())) { //     id_procedimento <argumentos>
+                } else {                    // id_funcao [A58] := <expressao> [A22] |
+                                                                                            // OK
+                    A58();      
+                    lexema = analisadorLexico(texto);
+                    if(comparaClasseLexema("cAtr", ":=")){
+                        lexema = analisadorLexico(texto);
+                        expressao();
+                    }
+                }
+                A22();
+               } else if(idInTable("Procedimento", lexema.getTexto())) { //     id_procedimento [A50] <argumentos> [A23]
                     lexema = analisadorLexico(texto);
                     procedimento();
                } else {
@@ -1030,7 +1043,7 @@ public class Principal extends javax.swing.JFrame {
        }
     }
 
-    //<var_read> ::= id_variavel <var_readL>
+    //<var_read> ::= id_variavel [A08] <var_readL>
     public void var_read(){
        if(comparaClasseLexema("cId", lexema.getTexto())){
            if(idInTable("Variavel", lexema.getTexto())){
@@ -1052,7 +1065,7 @@ public class Principal extends javax.swing.JFrame {
        }
     }
 
-    //<var_white> ::= id_variavel <var_whiteL>
+    //<var_white> ::= id_variavel [A09] <var_whiteL>
     public void var_write(){
        if(comparaClasseLexema("cId", lexema.getTexto())){
            if(idInTable("Variavel", lexema.getTexto())){
@@ -1109,7 +1122,7 @@ public class Principal extends javax.swing.JFrame {
        expressao();
     }*/
 
-    //<pfalsa> ::= else <bloco> | 
+    //<pfalsa> ::= else [A25] <bloco> | 
     public void pfalsa(){
        if(comparaClasseLexema("cRes", "else")){
             lexema = analisadorLexico(texto);
@@ -1117,7 +1130,7 @@ public class Principal extends javax.swing.JFrame {
       }
     }
 
-    //<expressao_logica> ::= <termo_logico> <expressao_logicaL>
+    //<expressao_logica> ::= <termo_logico> [A26] <expressao_logicaL>
     public void expressao_logica(){
         termo_logico();
         expressao_logicaL();
@@ -1132,13 +1145,13 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    //<termo_logico> ::= <fator_logico> <termo_logicoL>
+    //<termo_logico> ::= <fator_logico> [A27] <termo_logicoL>
     public void termo_logico(){
         fator_logico();
         termo_logicoL();
     }
 
-    //<termo_logicoL> ::= and <fator_logico> <termo_logicoL> | vazio
+    //<termo_logicoL> ::= and <fator_logico> [A27] <termo_logicoL> | vazio
     public void termo_logicoL(){
         if(comparaClasseLexema("cRes", "and")){
             lexema = analisadorLexico(texto);
@@ -1147,7 +1160,7 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    //<fator_logico> ::= <relacional> | ( <expressao_logica> ) | not <fator_logico> | true | false
+    //<fator_logico> ::= <relacional> | ( <expressao_logica> ) | not <fator_logico> [A28] | true [A29] | false [A30]
     public void fator_logico(){
         if(comparaClasseLexema("cLPar", "(")){
             lexema = analisadorLexico(texto);
@@ -1165,32 +1178,40 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    //<relacional> ::= <expressao> <relacao> <expressao>
+    //                      <relacional> ::= <expressao> = <expressao> [A31] | 
+    //                      <relacional> ::= <expressao> > <expressao> [A32] | 
+    //                      <relacional> ::= <expressao> >= <expressao> [A33] | 
+    //                      <relacional> ::= <expressao> < <expressao> [A34] | 
+    //                      <relacional> ::= <expressao> <= <expressao> [A35] | 
+    //                      <relacional> ::= <expressao> <> <expressao> [A36] |     
+
+                                                                            // OK
     public void relacional(){
         expressao();
-        relacao();
-        expressao();
-    }
-
-    //<relacao> ::= = | > | < | >= | <= | <>
-    public void relacao(){
-       if(comparaClasseLexema("cEQ", "=")){
+        int opt=0;
+        if(comparaClasseLexema("cEQ", "=")){
+           opt = 1;
            lexema=analisadorLexico(texto);
        }else{
            if(comparaClasseLexema("cGT", ">")){
+                opt = 2;
                lexema=analisadorLexico(texto);
            }else{
                if(comparaClasseLexema("cLT", "<")){
+                    opt = 4;
                    lexema = analisadorLexico(texto);
                   
                }else{
                    if(comparaClasseLexema("cGE", ">=")){
+                        opt = 3;
                        lexema=analisadorLexico(texto);
                    }else{
                        if(comparaClasseLexema("cLE", "<=")){
+                            opt = 5;
                            lexema=analisadorLexico(texto);
                        }else{
                            if(comparaClasseLexema("cNE", "<>")){
+                                opt = 6;
                                lexema=analisadorLexico(texto);
                            }else{
                                imprimeErro("cEQ | cGT | cLT | cGE | cLE | cNE", "= | > | < | >= | <= | <>");
@@ -1200,6 +1221,33 @@ public class Principal extends javax.swing.JFrame {
                }
            }
        }
+        expressao();
+        switch(opt){
+            case 1:
+                A31();
+                break;
+
+            case 2:
+                A32();
+                break;
+
+            case 3:
+                A33();
+                break;
+
+            case 4:
+                A34();
+                break;
+
+            case 5:
+                A35();
+                break;
+
+            case 6:
+                A36();
+                break;
+                
+       }
     }
 
     //<expressao> ::= <termo> <expressaoL>
@@ -1208,18 +1256,29 @@ public class Principal extends javax.swing.JFrame {
         expressaoL();
     }
    
-    //<expressaoL> ::= <operador_adicao> <termo> <expressaoL> | vazio
+    //<expressaoL> ::= + <termo> [A37] <expressaoL> | - <termo> [A38] <expressaoL> | vazio
+                                                                                                    //OK
     public void expressaoL(){
-       if(comparaClasseLexema("cAdd", "+") || comparaClasseLexema("cSub", "-") || comparaClasseLexema("cRes", "or")){
-           operador_adicao();
+        int opt = 0;
+       if(comparaClasseLexema("cAdd", "+") || comparaClasseLexema("cSub", "-")){
+           if(comparaClasseLexema("cAdd","+")){
+                opt = 1;
+           } else {
+            opt = 2;
+           }
+           lexema = analisadorLexico(texto);
            termo();
+           switch(opt){
+                case 1:
+                    A37();
+                    break;
+
+                case 2:
+                    A38();
+                    break;
+           }
            expressaoL();
        }   
-    }
-
-    //<operador_adicao> ::= + | - | or
-    public void operador_adicao(){
-        lexema = analisadorLexico(texto);
     }
    
     //<termo> ::= <fator> <termoL>
@@ -1228,21 +1287,32 @@ public class Principal extends javax.swing.JFrame {
         termoL();
     }
    
-    //<termoL> ::= <operador_multiplicacao> <fator> <termoL> | vazio
+    //<termoL> ::= * <fator> [A39] <termoL> | / <fator> [A40] <termoL> | vazio
+                                                                                //OK
     public void termoL(){
-       if(comparaClasseLexema("cMul", "*") || comparaClasseLexema("cDiv", "/") || comparaClasseLexema("cRes", "and")){
-            operador_multiplicacao();
+        int opt = 0;
+       if(comparaClasseLexema("cMul", "*") || comparaClasseLexema("cDiv", "/")){
+            if(comparaClasseLexema("cMul", "*")){
+                opt = 1;
+            } else {
+                opt = 2;
+            }
+            lexema = analisadorLexico(texto);
             fator();
+            switch(opt){
+                case 1:
+                    A39();
+                    break;
+
+                case 2:
+                    A40();
+                    break;
+            }
             termoL();
        }
     }
 
-    //<operador_multiplicacao> ::= * | / | and
-    public void operador_multiplicacao(){
-        lexema = analisadorLexico(texto);
-    }
-   
-   //<fator> ::= <variavel> | <funcao> | num | ( <expressao> )
+   //<fator> ::= <variavel> [A55] | <funcao> | num [A41] | ( <expressao> )
     public void fator(){
         if(comparaClasseLexema("cId", lexema.getTexto())){
             if(idInTable("Variavel", lexema.getTexto()) || idInTable("Variavel array", lexema.getTexto())){
@@ -1271,7 +1341,7 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    //<funcao2> ::= id_funcao <argumentos>
+    //<funcao2> ::= id_funcao <argumentos> [A42]
     public void funcao2(){
         lexema = analisadorLexico(texto);
         argumentos();

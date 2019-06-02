@@ -1,13 +1,13 @@
 			------- Murilo 
-<programa> ::= program id <corpo> •
-<corpo> ::= <declara> <rotina> begin <sentencas> end
+<programa> ::= program id [A01] <corpo> • [A45]
+<corpo> ::= <declara> <rotina> [A44] begin <sentencas> end [A46]
 <declara> ::= var <dvar> <declara> | 
 <dvar> ::= <variaveis> : <dvarL> 
-<dvarL> ::= <tipo_var> <dvarLL>
+<dvarL> ::= <tipo_var> [A02] <dvarLL>
 <dvarLL> ::= ; <dvar> | 
 <tipo_var> ::= integer | real
-<variaveis> ::= id <variaveisL>
-<variaveisL> ::= , id <variaveisL> | 
+<variaveis> ::= id [A03] <variaveisL>
+<variaveisL> ::= , id [A03] <variaveisL> | 
 <rotina> ::= procedure <procedimento> | function <funcao> | 
 <procedimento> ::= id <parametros> ; <corpo> ; <rotina>
 <funcao> ::= id <parametros> : <tipo_funcao> ; <corpo> ; <rotina>

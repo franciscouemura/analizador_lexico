@@ -11,15 +11,15 @@ package analizador_lexico;
  */
 public class TabelaSimbolos {
     private int memoria;
-    private Registro registro;
+    private ArrayList<Registro> registros;
     private TabelaSimbolos tabelaPai;
 
-    public Registro getRegistro() {
-        return registro;
+    public ArrayList<Registro> getRegistros() {
+        return registros;
     }
 
     public void setRegistro(Registro registro) {
-        this.registro = registro;
+        this.registros.add(registro);
     }
 
     public int getMemoria() {
