@@ -39,6 +39,14 @@ public class TabelaSimbolos {
     public void setTabelaPai(TabelaSimbolos tabelaPai) {
         this.tabelaPai = tabelaPai;
     }
+
+    public Registro getEsseRegistro(Registro registro){
+        for(Registro r : this.registros){
+            if(r.getNome().equals(registro.getNome()))
+                return r;
+        }
+        return this.tabelaPai.getEsseRegistro(registro);
+    }
     
     public boolean temRegistro(Registro registro){
         for(Registro r : registros){
