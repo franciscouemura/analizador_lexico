@@ -18,7 +18,9 @@ public class TabelaSimbolos {
         return registros;
     }
 
-    public void setRegistro(Registro registro) {
+    public void addRegistro(Registro registro) {
+        if(this.registros == null)
+            this.registros = new ArrayList<>();
         this.registros.add(registro);
     }
 
@@ -38,5 +40,20 @@ public class TabelaSimbolos {
         this.tabelaPai = tabelaPai;
     }
     
+    public boolean temRegistro(Registro registro){
+        for(Registro r : registros){
+            if(registro.getNome().equals(r.getNome()))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean temRegistroTodasTabelas(Registro registro){
+        if(this.tabelaPai == null){
+            return this.temRegistro(registro);
+        } else {
+            return this.temRegistro(registro) || this.tabelaPai.temRegistroTodasTabelas(registro);
+        }
+    }
     
 }
