@@ -91,6 +91,51 @@ public void A09(){
 	}
 }
 
+public void A11(){
+	insereLinhaArquivo(String.format("	mov ebx, [@DSP + (%d)]", nivel*4));
+
+	insereLinhaArquivo(String.format("	pop dword [ebx + (%d)]", offsetVariavel*(-4))); // Como saber qual a variavel? (-4, -8, -12???)
+	insereLinhaArquivo(String.format("rotuloFor:"));
+}
+
+public void A13(){
+	insereLinhaArquivo(String.format(" add dword [ebx + (%d)], 1", offsetVariavel*(-4))); // Como saber qual a variavel? (-4, -8, -12???)
+	insereLinhaArquivo(String.format("	jmp rotuloFor"));
+	insereLinhaArquivo(String.format("rotuloFimFor:"));
+}
+
+public void A15(){
+	insereLinhaArquivo(String.format(" pop eax"));
+	insereLinhaArquivo(String.format(" cmp eax, 1"));
+	insereLinhaArquivo(String.format(" jne rotuloRepeat"));
+}
+
+public void A17(){
+	insereLinhaArquivo(String.format(" pop eax"));
+	insereLinhaArquivo(String.format(" cmp eax, 1"));
+	insereLinhaArquivo(String.format(" jne rotuloFimWhile"));
+}
+
+public void A19(){
+	// ???????????
+}
+
+public void A21() {
+	insereLinhaArquivo(String.format("rotuloFimIf:"));
+}
+
+public void A23(){
+	// ??????
+}
+
+public void A25(){
+	insereLinhaArquivo(String.format("rotuloElse:"));
+}
+
+public void A27(){
+	
+}
+
 public void insereLinhaArquivo(String trecho){
 
 }
