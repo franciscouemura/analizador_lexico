@@ -947,12 +947,12 @@ public class Principal extends javax.swing.JFrame {
     		lexema = analisadorLexico(texto);
     		if(comparaClasseLexema("cId", lexema.getTexto())){
                 if(idInTable("Variavel", lexema.getTexto())){
-                    A57();
+                    Registro ultimoID = A57();
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr",":=")){
                         lexema = analisadorLexico(texto);
                         expressao();
-                        A11();
+                        A11(ultimoID);
                         if(comparaClasseLexema("cRes", "to")){
                             lexema = analisadorLexico(texto);
                             expressao();

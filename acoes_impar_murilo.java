@@ -91,8 +91,11 @@ public void A09(){
 	}
 }
 
-public void A11(){
-	insereLinhaArquivo(String.format("	mov ebx, [@DSP + (%d)]", nivel*4));
+public void A11(Registro ultimoId){
+	if(ultimoId.getNivel!=nivel){
+		insereLinhaArquivo(String.format("	mov ebx, [@DSP + (%d)]", nivel*4));	
+	}
+	
 
 	insereLinhaArquivo(String.format("	pop dword [ebx + (%d)]", offsetVariavel*(-4))); // Como saber qual a variavel? (-4, -8, -12???)
 	insereLinhaArquivo(String.format("rotuloFor:"));
