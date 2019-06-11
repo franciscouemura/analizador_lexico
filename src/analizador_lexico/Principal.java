@@ -803,7 +803,7 @@ public class Principal extends javax.swing.JFrame {
     public void funcao(){
     	if(comparaClasseLexema("cId",lexema.getTexto())){
             Lexema aux = lexema;
-            A05();
+            Registro ultimoId = A05();
     		lexema = analisadorLexico(texto);
     		parametros();
             A48();
@@ -811,7 +811,7 @@ public class Principal extends javax.swing.JFrame {
     		if(comparaClasseLexema("cDPto",":")){
     			lexema = analisadorLexico(texto);
     			tipo_simples("Funcao");
-                A47();
+                A47(ultimoId);
     			if(comparaClasseLexema("cPVir",";")){
     				lexema = analisadorLexico(texto);
     				corpo();

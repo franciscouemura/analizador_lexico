@@ -32,13 +32,13 @@ public void A03(){
 		registro.setCategoria("Variavel");
 		offsetVariavel.get(nivel) += 4; // SIZEOF_INT
 		registro.setNivel(nivel);
-		registro.setOffset(offsetVariavel.get(nivel)*(-1));
+		registro.setOffset(offsetVariavel.get(nivel));
 	} else {
 		//Erro: identificador já declarado anteriormente
 	}
 }
 
-public void A05(){
+public Registro A05(){
 	Registro registro = new Registro();
 	registro.setNome(lexema.getTexto());
 	if(!tabelaSimbolos.temRegistroTodasTabelas(registro)){
@@ -56,7 +56,9 @@ public void A05(){
 		offsetVariavel.add(0);
 	} else {
 		//Erro: identificador já declarado anteriormente
+		return null;
 	}
+	return registro;
 }
 
 
@@ -78,9 +80,13 @@ public void A09(){
 	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
 		registro = tabelaSimbolos.getEsseRegistro(registro);
 		if(registro.getCategoria().equals("Variavel") || registro.getCategoria().equals("Parametro")){
-			if(registro.getNivel != nivel)
-				insereLinhaArquivo(String.format("	mov edx, dword [@DSP + %d]", 4*registro.getNivel()));
-			insereLinhaArquivo(String.format("	push dword [edx + (%d)]", registro.getOffset()));
+			String basePilha = "ebp";
+			if(registro.getNivel != nivel){
+				insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", 4*registro.getNivel()));
+				basePilha = "ebx";
+			}
+			insereLinhaArquivo(String.format("	push dword [%s - %d]", basePilha, registro.getOffset()));
+			insereLinhaArquivo(String.format("	push dword @INTEGER"));
 			insereLinhaArquivo("	call _printf");
 			insereLinhaArquivo(String.format("	add esp, 8"));
 		} else {
@@ -92,31 +98,44 @@ public void A09(){
 }
 
 public void A11(Registro ultimoId){
-	if(ultimoId.getNivel!=nivel){
-		insereLinhaArquivo(String.format("	mov ebx, [@DSP + (%d)]", nivel*4));	
-	}
-	
+	if(ultimoId != null){
+		String basePilha = "ebp";
+		if(ultimoId.getNivel()!=nivel){
+			insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", ultimoId.getNivel()*4));
+			basePilha = "ebx";
+		}
+		insereLinhaArquivo(String.format("	pop dword [%s - %d]", basePilha, ultimoId.getOffset()));
 
-	insereLinhaArquivo(String.format("	pop dword [ebx + (%d)]", offsetVariavel*(-4))); // Como saber qual a variavel? (-4, -8, -12???)
-	insereLinhaArquivo(String.format("rotuloFor:"));
+		// gerar rotulo _for
+	}
 }
 
-public void A13(){
-	insereLinhaArquivo(String.format(" add dword [ebx + (%d)], 1", offsetVariavel*(-4))); // Como saber qual a variavel? (-4, -8, -12???)
-	insereLinhaArquivo(String.format("	jmp rotuloFor"));
-	insereLinhaArquivo(String.format("rotuloFimFor:"));
+public void A13(Registro ultimoId){
+	if(ultimoId!=null){
+		String basePilha = "ebp";
+		if(ultimoId.getNivel()!=nivel){
+			insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", ultimoId.getNivel()*4));
+			basePilha = "ebx";
+		}
+		insereLinhaArquivo(String.format(" add dword [%s - %d], 1", basePilha, ultimoId.getOffset()));
+		// jmp rotulo _for
+
+		// gerar rotulo _fim_for
+	}
 }
 
 public void A15(){
 	insereLinhaArquivo(String.format(" pop eax"));
 	insereLinhaArquivo(String.format(" cmp eax, 1"));
-	insereLinhaArquivo(String.format(" jne rotuloRepeat"));
+	
+	// jne rotulo _repeat
 }
 
 public void A17(){
 	insereLinhaArquivo(String.format(" pop eax"));
 	insereLinhaArquivo(String.format(" cmp eax, 1"));
-	insereLinhaArquivo(String.format(" jne rotuloFimWhile"));
+	
+	// jne rotulo _fim_while
 }
 
 public void A19(){
@@ -124,21 +143,98 @@ public void A19(){
 }
 
 public void A21() {
-	insereLinhaArquivo(String.format("rotuloFimIf:"));
+	// gerar rotulo _fim_if
 }
 
-public void A23(){
-	// ??????
+public void A23(Registro ultimoId){
+	if(/*Verificar se o número de argumentos fornecido em <argumentos> 
+		é igual ao número a numeroElementos, do id reconhecido.*/){
+		insereLinhaArquivo(String.format("	call %s", ultimoId.getRotulo()));
+		insereLinhaArquivo(String.format("	add esp, %d", ultimoId.getNumeroParametros()*4));
+	} else {
+		// Erro numero argumentos
+	}
 }
 
 public void A25(){
-	insereLinhaArquivo(String.format("rotuloElse:"));
+	// gerar rotulo _else
 }
 
 public void A27(){
-	
+	String rotuloFalse = ""; // Criar rotulo _false
+	String rotuloFim = ""; //Criar rotulo _fim
+	insereLinhaArquivo(String.format("	cmp dword [esp + 4], 0"));
+	insereLinhaArquivo(String.format("	je %s", rotuloFalse));	// je rotulo _false
+	insereLinhaArquivo(String.format("	cmp dword [esp], 0"));
+	insereLinhaArquivo(String.format("	je %s", rotuloFalse));	//	je rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp + 4], 1"));
+	insereLinhaArquivo(String.format("	jmp %s", rotuloFim));	// jmp rotulo _fim
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp + 4], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));		// gerar rotulo _fim
+	insereLinhaArquivo(String.format("	add esp, 4"));
 }
 
-public void insereLinhaArquivo(String trecho){
+public void A29(){
+	insereLinhaArquivo(String.format("	push 1"));
+}
+
+public void A31(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jne %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+
+public void A33(){
+	// duvida A32 : A36  ::=   Qual a primeira e qual a segunda expressao?
+}
+
+public void A37(){
+	insereLinhaArquivo("	pop eax");
+	insereLinhaArquivo("	add dword [esp], eax");
+}
+
+public void A39(){
+	insereLinhaArquivo("	pop eax");
+	insereLinhaArquivo("	imul eax, dword [esp]");
+	insereLinhaArquivo("	mov dword [esp], eax");
+}
+
+public void A41(){
+	insereLinhaArquivo(String.format("	push %d", Integer.parseInt(lexema.getTexto())));
+}
+
+public void A45(){
+	insereLinhaArquivo("section .data");
+	insereLinhaArquivo(String.format("@DSP times %d db 0", (nivel+1)*4));
+}
+
+public void A47(Registro ultimoId){
+	ultimoId.setOffset(offsetParametro); ////    ????????
+}
+
+public Registro A57(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		registro = tabelaSimbolos.getEsseRegistro();
+		if(!registro.getCategoria().equals("Variavel") && !registro.getCategoria().equals("Parametro") && !registro.getCategoria().equals("Funcao")){
+			// Erro identificador não é uma variavel
+			return null;
+		}
+	} else {
+		//Erro variavel nao declarada
+		return null;
+	}
+	return registro;
+}
+
+public void insereLinhaArquivo(String linha){
 
 }
