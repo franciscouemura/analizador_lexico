@@ -3,6 +3,7 @@ Lexema lexema;
 int nivel;
 TabelaSimbolos tabelaSimbolos;
 ArrayList<int> offsetVariavel = new ArrayList<>();
+ArrayList<String> rotulosData = new ArrayList<>();
 
 
 public void A01(){
@@ -191,8 +192,52 @@ public void A31(){
 	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
 }
 
+public void A32(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jle %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+
 public void A33(){
-	// duvida A32 : A36  ::=   Qual a primeira e qual a segunda expressao?
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jl %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+
+public void A34(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jge %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+
+public void A35(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jg %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
 }
 
 public void A37(){
@@ -216,7 +261,41 @@ public void A45(){
 }
 
 public void A47(Registro ultimoId){
-	ultimoId.setOffset(offsetParametro); ////    ????????
+	ultimoId.setNumeroParametros(tabelaSimbolos.getNumeroParametros());
+}
+
+public void A49(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		registro = tabelaSimbolos.getEsseRegistro(registro);
+		String categoria = registro.getCategoria;
+		if(categoria==null || (!categoria.equals("Variavel") && !categoria.equals("Parametro"))){
+			//Erro id nao e variavel/ parametro
+		}
+	} else {
+		//Erro variavel ainda nao declarada
+	}
+}
+
+
+public void A55(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		registro = getEsseRegistro(registro);
+		String categoria = registro.getCategoria();
+		if(categoria!=null && (categoria.equals("Variavel") || categoria.equals("Parametro"))){
+			String basePilha = "ebp";
+			if(registro.getNivel()!=nivel){
+				insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", registro.getNivel()*4));
+				basePilha = "ebx";
+			}
+			insereLinhaArquivo(String.format("	push dword [%s - %d]", basePilha, registro.getOffset()));
+		}
+	} else {
+		//Erro variavel nao declarada
+	}
 }
 
 public Registro A57(){
@@ -233,6 +312,17 @@ public Registro A57(){
 		return null;
 	}
 	return registro;
+}
+
+public void A59(boolean wln){
+	String rotuloString = "";	//criar rotulo _string
+	String endString = ", 0";
+	if(wln)
+		endString = ", 10, 0";
+	rotulosData.add(String.format("%s db %s %s", rotuloString, lexema.getTexto(), endString));
+	insereLinhaArquivo(String.format("	push %s", rotuloString));
+	insereLinhaArquivo("	call _printf");
+	insereLinhaArquivo("	add esp, 4");
 }
 
 public void insereLinhaArquivo(String linha){

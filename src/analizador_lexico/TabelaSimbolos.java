@@ -63,5 +63,14 @@ public class TabelaSimbolos {
             return this.temRegistro(registro) || this.tabelaPai.temRegistroTodasTabelas(registro);
         }
     }
+
+    public int getNumeroRegistroParametro(){
+        int n = 0;
+        for (Registro registro : this.registros) {
+            if(registro.getCategoria()!=null && registro.getCategoria().equals("Parametro"))
+                n++;
+        }
+        return n;
+    }
     
 }

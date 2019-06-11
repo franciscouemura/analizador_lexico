@@ -313,6 +313,7 @@ public class Principal extends javax.swing.JFrame {
                 p.palavrasReservadas.add("function");
                 p.palavrasReservadas.add("read");
                 p.palavrasReservadas.add("write");
+                p.palavrasReservadas.add("writeln");
                 p.palavrasReservadas.add("for");
                 p.palavrasReservadas.add("to");
                 p.palavrasReservadas.add("do");
@@ -375,7 +376,7 @@ public class Principal extends javax.swing.JFrame {
                 item = numero();
                 System.out.println("ok6");
             } else {
-                if (a.equals("\"")) {
+                if (a.equals("\'")) {
                     item = string();
                 } else {
                     if (a.equals(":")) {
@@ -538,7 +539,7 @@ public class Principal extends javax.swing.JFrame {
             index++;
             leitor = String.format("%s%c", leitor, texto.charAt(index));
 
-        } while (!(String.format("%c", texto.charAt(index)).equals("\"")) && index < texto.length());
+        } while (!(String.format("%c", texto.charAt(index)).equals("\'")) && index < texto.length());
         index++;
         Lexema resultado = new Lexema(leitor, "cStr", "String", linha, coluna);
         return resultado;
@@ -930,11 +931,11 @@ public class Principal extends javax.swing.JFrame {
     		} else {
     			imprimeErro("cLPar", "(");
     		}
-    	} else if(comparaClasseLexema("cRes", "write")) {	//					 	write ( <var_write> ) |
+    	} else if(comparaClasseLexema("cRes", "write")) {	//					 	write ( <exp_write> ) |
     		lexema = analisadorLexico(texto);
     		if(comparaClasseLexema("cLPar", "(")){
     			lexema = analisadorLexico(texto);
-    			var_write();
+    			exp_write(false);
     			if(comparaClasseLexema("cRPar", ")")){
     				lexema = analisadorLexico(texto);
     			} else {
@@ -943,7 +944,20 @@ public class Principal extends javax.swing.JFrame {
     		} else {
     			imprimeErro("cLPar", "(");
     		}
-    	} else if(comparaClasseLexema("cRes", "for")) {	//				 	 	for id_variavel [A57] := <expressao> [A11] to <expressao> [A12] do <bloco> [A13] ; |
+    	}else if(comparaClasseLexema("cRes", "writeln")) {   //                      writeln ( <exp_write> ) |
+            lexema = analisadorLexico(texto);
+            if(comparaClasseLexema("cLPar", "(")){
+                lexema = analisadorLexico(texto);
+                exp_write(true);
+                if(comparaClasseLexema("cRPar", ")")){
+                    lexema = analisadorLexico(texto);
+                } else {
+                    imprimeErro("cRPar", ")");
+                }
+            } else {
+                imprimeErro("cLPar", "(");
+            }
+        } else if(comparaClasseLexema("cRes", "for")) {	//				 	 	for id_variavel [A57] := <expressao> [A11] to <expressao> [A12] do <bloco> [A13] ; |
     		lexema = analisadorLexico(texto);
     		if(comparaClasseLexema("cId", lexema.getTexto())){
                 if(idInTable("Variavel", lexema.getTexto())){
@@ -1097,7 +1111,7 @@ public class Principal extends javax.swing.JFrame {
        }
     }
 
-    //<var_white> ::= id_variavel [A09] <var_whiteL>
+    //<var_write> ::= id_variavel [A09] <var_writeL>
     public void var_write(){
        if(comparaClasseLexema("cId", lexema.getTexto())){
            if(idInTable("Variavel", lexema.getTexto())){
@@ -1112,7 +1126,16 @@ public class Principal extends javax.swing.JFrame {
        }
     }
 
-    //<var_whiteL> ::= , <var_white> | vazio
+    //<exp_write> ::= string A59 | <var_write>
+    public void exp_write(boolean wln){
+        if(comparaClasseLexema("cStr", lexema.getTexto())){
+            A59(wln);
+        } else {
+            var_write();
+        }
+    }
+
+    //<var_writeL> ::= , <var_write> | vazio
     public void var_writeL(){
        if(comparaClasseLexema("cVir", ",")){
            lexema=analisadorLexico(texto);
