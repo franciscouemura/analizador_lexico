@@ -274,6 +274,7 @@ public class Principal extends javax.swing.JFrame {
         erro = false;
         imprimeTabela();
         rodaAsm();
+        
     
         
     }//GEN-LAST:event_jButtonCompilarActionPerformed
@@ -2060,9 +2061,12 @@ public class Principal extends javax.swing.JFrame {
         try{
             String caminho = geraArquivoAsm().getAbsolutePath();
             System.out.print(caminho);
-            Runtime.getRuntime().exec("nasm -f win32 ./programa.asm -o ./asm.o");
-            Runtime.getRuntime().exec("gcc ./asm.o -o ./asm.exe");
-            Runtime.getRuntime().exec("pause");
+            Runtime.getRuntime().exec("nasm -f win32 ./programa.asm -o ./programa.o");
+            Runtime.getRuntime().exec("gcc ./programa.o -o ./programa.exe");
+            
+            String commando = "cmd /c start cmd.exe /K \"programa\"";
+            Runtime.getRuntime().exec(commando);
+            
             
         }catch(Exception ex){
             //gerar erro 
