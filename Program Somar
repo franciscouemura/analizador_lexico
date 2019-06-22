@@ -1,0 +1,9 @@
+program somar
+var
+	n1, n2, soma:integer;
+begin
+	n1:=1;
+	n2:=2;
+	soma := n1+n2;
+	write(soma);
+end.

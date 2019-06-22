@@ -1,0 +1,8 @@
+Program Somar;
+Var n1, n2, soma:Integer;
+begin
+	n1:=1;
+	n2:=2;
+	soma := n1+n2;
+	Writeln('a soma é:', soma);
+end;

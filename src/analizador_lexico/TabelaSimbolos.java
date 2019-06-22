@@ -5,6 +5,8 @@
  */
 package analizador_lexico;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Murilo Marcineiro
@@ -13,6 +15,15 @@ public class TabelaSimbolos {
     private int memoria;
     private ArrayList<Registro> registros;
     private TabelaSimbolos tabelaPai;
+    private String rotulo;
+    
+    public void setRotulo(String rotulo){
+        this.rotulo = rotulo;
+    }
+    
+    public String getRotulo(){
+        return this.rotulo;
+    }
 
     public ArrayList<Registro> getRegistros() {
         return registros;
@@ -63,6 +74,8 @@ public class TabelaSimbolos {
             return this.temRegistro(registro) || this.tabelaPai.temRegistroTodasTabelas(registro);
         }
     }
+    
+    
 
     public int getNumeroRegistroParametro(){
         int n = 0;

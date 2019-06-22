@@ -5,6 +5,8 @@
  */
 package analizador_lexico;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
@@ -20,6 +22,12 @@ public class Principal extends javax.swing.JFrame {
 
     public RTextScrollPane sp;
     public RSyntaxTextArea fonte;
+    int nivel;
+    TabelaSimbolos tabelaSimbolos;
+    ArrayList<Integer> offsetVariavel = new ArrayList<>();
+    ArrayList<String> rotulosData = new ArrayList<>();
+    public String codigoAssembly;
+    public int variaveisLocais;
     /**
      * Creates new form Principal
      */
@@ -246,6 +254,8 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonExecutarActionPerformed
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
+         variaveisLocais=0;
+        codigoAssembly = "";
         textAreaMensagens.setText("");
         texto = fonte.getText().toString();
         jTableTabelaDeSimbolos.removeAll();
@@ -260,6 +270,9 @@ public class Principal extends javax.swing.JFrame {
         coluna = 0;
         erro = false;
         imprimeTabela();
+        rodaAsm();
+    
+        
     }//GEN-LAST:event_jButtonCompilarActionPerformed
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
@@ -602,6 +615,7 @@ public class Principal extends javax.swing.JFrame {
     //<declara> ::= var <dvar> <declara> | vazio
     public void declara(){
     	if(comparaClasseLexema("cRes","var")){
+                variaveisLocais++;
     		lexema = analisadorLexico(texto);
     		dvar(false);
     		declara();
@@ -618,7 +632,7 @@ public class Principal extends javax.swing.JFrame {
                 if(comparaClasseLexema("cDPto",":")){
                     lexema = analisadorLexico(texto);
                     tipo("Variavel");
-                    A02();
+                    //A02();
                     if(comparaClasseLexema("cPVir", ";")){
                         lexema = analisadorLexico(texto);
                         dvarL();
@@ -648,7 +662,7 @@ public class Principal extends javax.swing.JFrame {
         
     //<dvarL> ::= <tipo_var> [A02] <dvarLL>
     public void dvarL(){
-    	A02();
+    	//A02();
         dvar(true);
     }
         
@@ -778,14 +792,14 @@ public class Principal extends javax.swing.JFrame {
     public void procedimento(){
     	if(comparaClasseLexema("cId",lexema.getTexto())){
             lexema.setCategoria("Procedimento");
-            A04();
+            //A04();
     		lexema = analisadorLexico(texto);
     		parametros();
-            A48();
+            //A48();
     		if(comparaClasseLexema("cPVir",";")){
     			lexema = analisadorLexico(texto);
     			corpo();
-                A56();
+                //A56();
     			if(comparaClasseLexema("cPVir",";")){
     				lexema = analisadorLexico(texto);
     				rotina();
@@ -804,19 +818,19 @@ public class Principal extends javax.swing.JFrame {
     public void funcao(){
     	if(comparaClasseLexema("cId",lexema.getTexto())){
             Lexema aux = lexema;
-            Registro ultimoId = A05();
+            //Registro ultimoId = A05();
     		lexema = analisadorLexico(texto);
     		parametros();
-            A48();
+            //A48();
             detTipo.add(aux);
     		if(comparaClasseLexema("cDPto",":")){
     			lexema = analisadorLexico(texto);
     			tipo_simples("Funcao");
-                A47(ultimoId);
+                //A47(ultimoId);
     			if(comparaClasseLexema("cPVir",";")){
     				lexema = analisadorLexico(texto);
     				corpo();
-                    A56();
+                    //A56();
     				if(comparaClasseLexema("cPVir",";")){
     					lexema = analisadorLexico(texto);
     					rotina();
@@ -858,7 +872,7 @@ public class Principal extends javax.swing.JFrame {
     	if(comparaClasseLexema("cDPto",":")){
     		lexema = analisadorLexico(texto);
     		tipo("Parametro");
-            A06();
+            //A06();
     		lista_parametrosL();
     	} else {
     		imprimeErro("cDPto", ":");
@@ -879,7 +893,7 @@ public class Principal extends javax.swing.JFrame {
     public void lista_id(){
     	if(comparaClasseLexema("cId", lexema.getTexto())){
             detTipo.add(lexema);
-            A07();
+            //A07();
             lexema = analisadorLexico(texto);
     		lista_idL();
     	} else {
@@ -895,7 +909,7 @@ public class Principal extends javax.swing.JFrame {
             detTipo.add(lexema);
     		lexema = analisadorLexico(texto);
     		if(comparaClasseLexema("cId", lexema.getTexto())){
-    			A07();
+    			//A07();
                 lexema = analisadorLexico(texto);
     			lista_idL();
     		} else {
@@ -918,6 +932,7 @@ public class Principal extends javax.swing.JFrame {
 
     //<comando> ::= 		read ( <var_read> ) |
     public void comando(){
+        Registro registro;
     	if(comparaClasseLexema("cRes", "read")){
     		lexema = analisadorLexico(texto);
     		if(comparaClasseLexema("cLPar", "(")){
@@ -961,20 +976,20 @@ public class Principal extends javax.swing.JFrame {
     		lexema = analisadorLexico(texto);
     		if(comparaClasseLexema("cId", lexema.getTexto())){
                 if(idInTable("Variavel", lexema.getTexto())){
-                    Registro ultimoID = A57();
+                    //Registro ultimoID = A57();
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr",":=")){
                         lexema = analisadorLexico(texto);
                         expressao();
-                        A11(ultimoID);
+                        //A11(ultimoID);
                         if(comparaClasseLexema("cRes", "to")){
                             lexema = analisadorLexico(texto);
                             expressao();
-                            A12();
+                            //A12();
                             if(comparaClasseLexema("cRes", "do")){
                                 lexema = analisadorLexico(texto);
                                 bloco();
-                                A13();
+                                //A13();
                             } else {
                                 imprimeErro("cRes", "do");
                             }
@@ -991,38 +1006,38 @@ public class Principal extends javax.swing.JFrame {
                     imprimeErro("cId", "Variavel");
                 }
     	} else if(comparaClasseLexema("cRes", "repeat")) {	//				 	 	repeat [A14] <sentencas> until <expressao_logica> [A15] |
-    		A14();
+    		//A14();
             lexema = analisadorLexico(texto);
     		sentencas();
     		if(comparaClasseLexema("cRes", "until")){
                     lexema = analisadorLexico(texto);
                     expressao_logica();
-                    A15();
+                    //A15();
     		} else {
     			imprimeErro("cRes", "until");
     		}
     	} else if(comparaClasseLexema("cRes", "while")){	//				while [A16] <expressao_logica> [A17] do <bloco> [A18] |
-    		A16();
+    		//A16();
             lexema = analisadorLexico(texto);
                 expressao_logica();
-                A17();
+                //A17();
                 if(comparaClasseLexema("cRes", "do")){
                         lexema = analisadorLexico(texto);
                         bloco();
-                        A18();
+                        //A18();
                 } else {
                         imprimeErro("cRes", "do");
                 }
     	} else if(comparaClasseLexema("cRes", "if")){	//				if <expressao_logica> [A19] then <bloco> [A20] <pfalsa> [A21]|
     		lexema = analisadorLexico(texto);
                 expressao_logica();
-                A19();
+                //A19();
                 if(comparaClasseLexema("cRes", "then")){
                         lexema = analisadorLexico(texto);
                         bloco();
-                        A20();
+                        //A20();
                         pfalsa();
-                        A21();
+                        //A21();
                 } else {
                         imprimeErro("cRes", "then");
                 }
@@ -1030,24 +1045,25 @@ public class Principal extends javax.swing.JFrame {
                                                                                                 // OK
     		if(idInTable("Variavel", lexema.getTexto()) || idInTable("Funcao", lexema.getTexto())){
                 if(idInTable("Variavel", lexema.getTexto())){
-                    A49();
+                    registro = A49();
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr", ":=")){
                         lexema = analisadorLexico(texto);
                         expressao();
+                        A22(registro);
                     }
                 } else {                    // id_funcao [A58] := <expressao> [A22] |
                                                                                             // OK
-                    A58();      
+                    //A58();      
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr", ":=")){
                         lexema = analisadorLexico(texto);
                         expressao();
                     }
                 }
-                A22();
+                //A22();
                } else if(idInTable("Procedimento", lexema.getTexto())) { //     id_procedimento [A50] <argumentos> [A23]
-                    A50();
+                    //A50();
                     lexema = analisadorLexico(texto);
                     procedimento2();
                } else {
@@ -1092,7 +1108,7 @@ public class Principal extends javax.swing.JFrame {
     public void var_read(){
        if(comparaClasseLexema("cId", lexema.getTexto())){
            if(idInTable("Variavel", lexema.getTexto())){
-                A08();
+                //A08();
                 lexema = analisadorLexico(texto);
                 var_readL();
            } else {
@@ -1181,7 +1197,7 @@ public class Principal extends javax.swing.JFrame {
     //<pfalsa> ::= else [A25] <bloco> | 
     public void pfalsa(){
        if(comparaClasseLexema("cRes", "else")){
-            A25();
+            //A25();
             lexema = analisadorLexico(texto);
             bloco();
       }
@@ -1190,7 +1206,7 @@ public class Principal extends javax.swing.JFrame {
     //<expressao_logica> ::= <termo_logico> [A26] <expressao_logicaL>
     public void expressao_logica(){
         termo_logico();
-        A26();
+        //A26();
         expressao_logicaL();
     }
 
@@ -1206,7 +1222,7 @@ public class Principal extends javax.swing.JFrame {
     //<termo_logico> ::= <fator_logico> [A27] <termo_logicoL>
     public void termo_logico(){
         fator_logico();
-        A27();
+        //A27();
         termo_logicoL();
     }
 
@@ -1215,7 +1231,7 @@ public class Principal extends javax.swing.JFrame {
         if(comparaClasseLexema("cRes", "and")){
             lexema = analisadorLexico(texto);
             fator_logico();
-            A27();
+            //A27();
             termo_logicoL();
         }
     }
@@ -1231,12 +1247,12 @@ public class Principal extends javax.swing.JFrame {
         } else if(comparaClasseLexema("cRes", "not")){
             lexema = analisadorLexico(texto);
             fator_logico();
-            A28();
+            //A28();
         } else if(comparaClasseLexema("cRes", "true")){
-            A29();
+            //A29();
             lexema = analisadorLexico(texto);
         } else if(comparaClasseLexema("cRes", "false")){
-            A30();
+            //A30();
             lexema = analisadorLexico(texto);
         } else {
             relacional();
@@ -1289,27 +1305,28 @@ public class Principal extends javax.swing.JFrame {
         expressao();
         switch(opt){
             case 1:
-                A31();
+                //A31();
                 break;
 
             case 2:
-                A32();
+                //A32();
                 break;
 
             case 3:
-                A33();
+                //A33();
                 break;
 
+                
             case 4:
-                A34();
+                //A34();
                 break;
 
             case 5:
-                A35();
+                //A35();
                 break;
 
             case 6:
-                A36();
+                //A36();
                 break;
                 
        }
@@ -1339,7 +1356,7 @@ public class Principal extends javax.swing.JFrame {
                     break;
 
                 case 2:
-                    A38();
+                    //A38();
                     break;
            }
            expressaoL();
@@ -1366,11 +1383,11 @@ public class Principal extends javax.swing.JFrame {
             fator();
             switch(opt){
                 case 1:
-                    A39();
+                    //A39();
                     break;
 
                 case 2:
-                    A40();
+                    //A40();
                     break;
             }
             termoL();
@@ -1412,14 +1429,14 @@ public class Principal extends javax.swing.JFrame {
     public void funcao2(){
         lexema = analisadorLexico(texto);
         argumentos();
-        A42();
+        //A42();
     }
 
     //<procedimento2> ::= id_procedimento <argumentos> A23();
     public void procedimento2(){
         lexema = analisadorLexico(texto);
         argumentos();
-        A23();
+        //A23();
     }
 
     // <variavel> ::= id_variavel_simples | id_variavel_array [ <expressao> ]
@@ -1528,8 +1545,518 @@ public class Principal extends javax.swing.JFrame {
            
         }
     }
+    
+    // Ações ------------------------------------------------------------------------------------------
+  
+    
+    public void A01(){
+	tabelaSimbolos = new TabelaSimbolos();
+	tabelaSimbolos.setTabelaPai(null);
+        tabelaSimbolos.setRotulo("_main");
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	nivel = 0;
+	registro.setNivel(nivel);
+	registro.setCategoria("Programa principal");
+	
+	offsetVariavel.add(0);
+	registro.setOffset(offsetVariavel.get(nivel));
+	tabelaSimbolos.addRegistro(registro);
+	insereLinhaArquivo("global _main");
+	insereLinhaArquivo("extern _printf");
+	insereLinhaArquivo("extern _putchar");
+	insereLinhaArquivo("extern _scanf");
+	insereLinhaArquivo("section .text");
+}
+    
+    
+    
+    public void A03(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(!tabelaSimbolos.temRegistro(registro)){
+		registro.setCategoria("Variavel");
+                offsetVariavel.set(nivel, offsetVariavel.get(nivel)+4); //SIZEOF_INT
+		registro.setNivel(nivel);
+		registro.setOffset(offsetVariavel.get(nivel));
+                tabelaSimbolos.addRegistro(registro);
+	} else {
+		//Erro: identificador já declarado anteriormente
+	}
+}
+    /*
+    
+    public void A04(){
+        TabelaSimbolos procura = procuraId(this.tabelaSimbolos);
+        if(procura== null){
+            this.nivel = nivel+1;
+            Registro novo = new Registro();
+            novo.setNivel(this.nivel);
+            novo.setNome(this.lexema.getTexto());
+            novo.setCategoria("Procedimento");
+            novo.setRotulo(lexema.getTexto());
+            
+            TabelaSimbolos novoProcedimentoTS = new TabelaSimbolos(); 
+            novoProcedimentoTS.setTabelaPai(tabelaSimbolos);
+            
+            novo.setTabelaSimbolos(novoProcedimentoTS);
+            tabelaSimbolos.addRegistro(novo);
+            tabelaSimbolos = novoProcedimentoTS;
+            
+            offsetVariavel.add(0);
+           
+        
+        }else{
+            // emitir uma mensagem apropriada dizendo que o mesmo já foi declarado anteriormente.
+        }
+    }
+    
+    public TabelaSimbolos procuraId(TabelaSimbolos tabelaPai){
+        TabelaSimbolos resultado = new TabelaSimbolos();
+        boolean encontrou = false;
+        if(tabelaPai== null){
+           resultado = tabelaPai;
+        }else{
+            for(Registro r: tabelaPai.getRegistros()){
+                if(r.getNome().equals(lexema.getTexto())){
+                    resultado = tabelaPai;
+                    encontrou = true;
+                }  
+            }
+            if (!encontrou){
+                resultado = procuraId(tabelaPai.getTabelaPai());
+            }
+        }
+        return resultado;
+    }
+    
+    
+    public Registro A05(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(!tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		nivel += 1;
+		registro.setNivel(nivel);
+		registro.setCategoria("Funcao");
+		registro.setRotulo(lexema.getTexto());
+		tabelaSimbolos.addRegistro(registro);
+		TabelaSimbolos novaTs = new TabelaSimbolos();
+		novaTs.setTabelaPai(tabelaSimbolos);
+		tabelaSimbolos = novaTs;						// Por este motivo, add na acao 56:  tabelaSimbolos = tabelaSimbolos.getTabelaPai();
+
+		//Inserir o identificador da função, com todas as suas informações, na nova tabela, para que ela possa ser localizada pela atrubuição em <comando>.-----??
+
+		offsetVariavel.add(0);
+	} else {
+		//Erro: identificador já declarado anteriormente
+		return null;
+	}
+	return registro;
+}
+    
+    
+    public void A07(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(!tabelaSimbolos.temRegistro(registro)){
+		registro.setCategoria("Parametro");
+		registro.setNivel(nivel);
+		tabelaSimbolos.addRegistro(registro);
+	} else {
+		//Erro: identificador já declarado anteriormente
+	}
+}
+    
+    public void A08(){
+        TabelaSimbolos procura = procuraId(tabelaSimbolos);
+        Registro registro=null;
+        if(procura==null){
+            //emitir uma mensagem apropriada dizendo que o mesmo ainda não foi declarado.
+        }else{
+            for(Registro r: procura.getRegistros()){
+                registro = r;
+            }
+            if(registro.getCategoria().equals("Variavel") || registro.getCategoria().equals("Parametro")){
+                //gerar funcção de leitura
+            }else{
+                // ERRO não é variavel nem parametro
+            }
+        }
+    }
+*/
+    
+    public void A09(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		registro = tabelaSimbolos.getEsseRegistro(registro);
+		if(registro.getCategoria().equals("Variavel") || registro.getCategoria().equals("Parametro")){
+			String basePilha = "ebp";
+			if(registro.getNivel() != nivel){
+				insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", 4*registro.getNivel()));
+				basePilha = "ebx";
+			}
+			insereLinhaArquivo(String.format("	push dword [%s - %d]", basePilha, registro.getOffset()));
+			insereLinhaArquivo(String.format("	push dword @INTEGER"));
+			insereLinhaArquivo("	call _printf");
+			insereLinhaArquivo(String.format("	add esp, 8"));
+		} else {
+			//Erro: identificador não é uma Variável
+		}
+	} else {
+		//Erro: identificador não foi declarado anteriormente
+	}
+}
+    /*
+    
+    public void A11(Registro ultimoId){
+	if(ultimoId != null){
+		String basePilha = "ebp";
+		if(ultimoId.getNivel()!=nivel){
+			insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", ultimoId.getNivel()*4));
+			basePilha = "ebx";
+		}
+		insereLinhaArquivo(String.format("	pop dword [%s - %d]", basePilha, ultimoId.getOffset()));
+
+		// gerar rotulo _for
+	}
+}
+    
+    public void A12(Registro ultimoId){
+        insereLinhaArquivo(String.format("mov ebx, dword [@DSP + %d]", ultimoId.getNivel()*4));
+        insereLinhaArquivo("cmp esp ebx");
+        insereLinhaArquivo("jg _rotuloFim"); // usar rotulo gerado no gerador de rótulos;            
+    }
+      
+    
+    public void A13(Registro ultimoId){
+	if(ultimoId!=null){
+		String basePilha = "ebp";
+		if(ultimoId.getNivel()!=nivel){
+			insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", ultimoId.getNivel()*4));
+			basePilha = "ebx";
+		}
+		insereLinhaArquivo(String.format(" add dword [%s - %d], 1", basePilha, ultimoId.getOffset()));
+		// jmp rotulo _for
+
+		// gerar rotulo _fim_for
+	}
+}
+    
+    public void A14(){
+        //criar rotulor de repetição do for
+        
+    }
+    
+    public void A15(){
+	insereLinhaArquivo(String.format(" pop eax"));
+	insereLinhaArquivo(String.format(" cmp eax, 1"));
+	
+	// jne rotulo _repeat
+}
+    
+    public void A16(){
+        //criar rotulo entrada while
+        //criar rotulo saida while
+        insereLinhaArquivo("_while"); // para label while criada acima para entrada
+    }
+    
+    
+    public void A17(){
+	insereLinhaArquivo(String.format(" pop eax"));
+	insereLinhaArquivo(String.format(" cmp eax, 1"));
+	
+	// jne rotulo _fim_while
+}
+    
+    public void A18(){
+        insereLinhaArquivo("jmp _while");//rotulo gerado em a16
+        insereLinhaArquivo("_fimWhile");//rotulo gerado em a16
+    }
+    
+    public void A19(){
+	// ???????????
+}
+    public void A20(){
+        insereLinhaArquivo("jmp _fimWhile"); // rotulo gerado em a16
+    }
+    
+    public void A21() {
+	// gerar rotulo _fim_if
+}
+*/
+    public void A22(Registro registro){
+        if(registro.getCategoria().equals("Variavel")|| registro.getCategoria().equals("Parametro")){   
+            insereLinhaArquivo(String.format("mov dword[@DSP-%d], dword[esp]",registro.getOffset()));
+            //Falta implementar caso seja uma função
+        }
+    }
+    
+/*    
+    
+    public void A23(Registro ultimoId){
+	if(/*Verificar se o número de argumentos fornecido em <argumentos> 
+		é igual ao número a numeroElementos, do id reconhecido.*\){
+		insereLinhaArquivo(String.format("	call %s", ultimoId.getRotulo()));
+		insereLinhaArquivo(String.format("	add esp, %d", ultimoId.getNumeroParametros()*4));
+	} else {
+		// Erro numero argumentos
+	}
+}
+    
+    public void A25(){
+	// gerar rotulo _else
+}
+    
+    public void A27(){
+	String rotuloFalse = ""; // Criar rotulo _false
+	String rotuloFim = ""; //Criar rotulo _fim
+	insereLinhaArquivo(String.format("	cmp dword [esp + 4], 0"));
+	insereLinhaArquivo(String.format("	je %s", rotuloFalse));	// je rotulo _false
+	insereLinhaArquivo(String.format("	cmp dword [esp], 0"));
+	insereLinhaArquivo(String.format("	je %s", rotuloFalse));	//	je rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp + 4], 1"));
+	insereLinhaArquivo(String.format("	jmp %s", rotuloFim));	// jmp rotulo _fim
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp + 4], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));		// gerar rotulo _fim
+	insereLinhaArquivo(String.format("	add esp, 4"));
+}
+    
+    public void A29(){
+	insereLinhaArquivo(String.format("	push 1"));
+}
+    
+    public void A31(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jne %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+    
+    public void A32(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jle %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+    
+    public void A33(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jl %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+    
+    public void A34(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jge %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+    
+    public void A35(){
+	String rotuloFim = ""; // criar rotulo _fim
+	String rotuloFalse = ""; // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	jg %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+}
+    
+    */
+    
+  public void A37(){
+	insereLinhaArquivo("	pop eax");
+	insereLinhaArquivo("	add dword [esp], eax");
+}
+        
+    
+    /*
+    public void A39(){
+	insereLinhaArquivo("	pop eax");
+	insereLinhaArquivo("	imul eax, dword [esp]");
+	insereLinhaArquivo("	mov dword [esp], eax");
+}
+    
+*/    
+    public void A41(){
+	insereLinhaArquivo(String.format("	push %d", Integer.parseInt(lexema.getTexto())));
+}
+    
+    public void A44(){
+        String rotulo= new String();
+        rotulo = tabelaSimbolos.getRotulo();
+        insereLinhaArquivo(String.format("%s:",rotulo));
+        insereLinhaArquivo("push ebp");
+        insereLinhaArquivo(String.format("push dword[@DSP + %d]", nivel*4));
+        insereLinhaArquivo("mov ebp,esp");
+        insereLinhaArquivo(String.format("mov dword[@DSP +%d],ebp", nivel*4));
+        
+        int nVariaveis =0;
+        for(Registro r: tabelaSimbolos.getRegistros()){
+            if(r.getCategoria().equals("Variavel")){
+                nVariaveis++;
+            }
+        }
+        insereLinhaArquivo(String.format("sub esp,%d", nVariaveis*4));
+        
+    }
+        
 
 
+    
+    public void A45(){
+	insereLinhaArquivo("section .data");
+	insereLinhaArquivo(String.format("@DSP times %d db 0", (nivel+1)*4));
+}
+    
+    
+    public void A46(){
+        
+        //verifica quantidade de variaveis locais
+        int variaveis =0;
+        for(Registro r: tabelaSimbolos.getRegistros()){
+            if(r.getNivel()==nivel && r.getCategoria().equals("Variavel")){
+                variaveis++;
+            }
+        }
+        
+        insereLinhaArquivo(String.format("add esp, %d", variaveis));
+        insereLinhaArquivo("mov esp,ebp");
+        insereLinhaArquivo("pop dword[@DSP+8]");
+        insereLinhaArquivo("pop ebp");
+        insereLinhaArquivo("ret");
+    }
+    
+    
+    /*
+    public void A47(Registro ultimoId){
+	ultimoId.setNumeroParametros(tabelaSimbolos.getNumeroRegistroParametro());
+}
+    
+    
+*/
+    public Registro A49(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		registro = tabelaSimbolos.getEsseRegistro(registro);
+		String categoria = registro.getCategoria();
+		if(categoria==null || (!categoria.equals("Variavel") && !categoria.equals("Parametro"))){
+			//Erro id nao e variavel/ parametro
+		}
+	} else {
+		registro = null;//Erro variavel ainda nao declarada
+	}
+        return registro;
+}
+  
+    
+    
+    public void A55(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		registro = tabelaSimbolos.getEsseRegistro(registro);
+		String categoria = registro.getCategoria();
+		if(categoria!=null && (categoria.equals("Variavel") || categoria.equals("Parametro"))){
+			String basePilha = "ebp";
+			if(registro.getNivel()!=nivel){
+				insereLinhaArquivo(String.format("	mov ebx, dword [@DSP + %d]", registro.getNivel()*4));
+				basePilha = "ebx";
+			}
+			insereLinhaArquivo(String.format("	push dword [%s - %d]", basePilha, registro.getOffset()));
+		}
+	} else {
+		//Erro variavel nao declarada
+	}
+}
+    /*
+    
+    public Registro A57(){
+	Registro registro = new Registro();
+	registro.setNome(lexema.getTexto());
+	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
+		registro = tabelaSimbolos.getEsseRegistro();
+		if(!registro.getCategoria().equals("Variavel") && !registro.getCategoria().equals("Parametro") && !registro.getCategoria().equals("Funcao")){
+			// Erro identificador não é uma variavel
+			return null;
+		}
+	} else {
+		//Erro variavel nao declarada
+		return null;
+	}
+	return registro;
+}
+*/
+
+    public void A59(boolean wln){
+	String rotuloString = "";	//criar rotulo _string
+	String endString = ", 0";
+	if(wln)
+		endString = ", 10, 0";
+	rotulosData.add(String.format("%s db %s %s", rotuloString, lexema.getTexto(), endString));
+	insereLinhaArquivo(String.format("	push %s", rotuloString));
+	insereLinhaArquivo("	call _printf");
+	insereLinhaArquivo("	add esp, 4");
+}
+ 
+
+        public void insereLinhaArquivo(String linha){
+            codigoAssembly = codigoAssembly+linha+"\n";
+        }
+ 
+    
+    public File geraArquivoAsm(){
+        File file = new File("./programa.asm");
+        try{
+            file.createNewFile();
+            FileWriter asm = new FileWriter(file);
+            asm.write(codigoAssembly); // colocar a string do assembly aqui
+            asm.flush();
+            asm.close();
+        }catch(Exception ex){
+        }
+        
+        return file;
+    }
+
+    public void rodaAsm(){
+        try{
+            String caminho = geraArquivoAsm().getAbsolutePath();
+            System.out.print(caminho);
+            Runtime.getRuntime().exec("nasm -f win32 ./programa.asm -o ./asm.o");
+            Runtime.getRuntime().exec("gcc ./asm.o -o ./asm.exe");
+            Runtime.getRuntime().exec("pause");
+            
+        }catch(Exception ex){
+            //gerar erro 
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler2;
     private javax.swing.JButton jButtonAbrir;
