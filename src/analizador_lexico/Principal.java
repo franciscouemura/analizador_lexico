@@ -1399,7 +1399,7 @@ public class Principal extends javax.swing.JFrame {
                     break;
 
                 case 2:
-                    //A40();
+                    A40();
                     break;
             }
             termoL();
@@ -1918,15 +1918,14 @@ public class Principal extends javax.swing.JFrame {
 	insereLinhaArquivo("	imul eax, dword [esp]");
         insereLinhaArquivo("	mov dword [esp], eax");
     }
-    
-    /*
-    public void A39(){
-	insereLinhaArquivo("	pop eax");
-	insereLinhaArquivo("	imul eax, dword [esp]");
-	insereLinhaArquivo("	mov dword [esp], eax");
-}
-    
-*/    
+  
+  public void A40(){
+	insereLinhaArquivo("	pop ecx");
+        insereLinhaArquivo("	pop eax");
+	insereLinhaArquivo("	idiv ecx");
+        insereLinhaArquivo("	push eax");
+    }
+   
     public void A41(){
 	insereLinhaArquivo(String.format("	push %d", Integer.parseInt(lexema.getTexto())));
 }
@@ -2081,7 +2080,7 @@ public class Principal extends javax.swing.JFrame {
             
             
         }catch(Exception ex){
-            //gerar erro 
+            System.out.println(ex);
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

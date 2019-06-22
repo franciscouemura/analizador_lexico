@@ -20,12 +20,47 @@ mov dword[eax - 8], ebx
 	push dword [ebp - 4]
 	push dword [ebp - 8]
 	pop eax
+	add dword [esp], eax
+mov eax, dword[@DSP+0]
+pop ebx
+mov dword[eax - 12], ebx
+	push dword [ebp - 12]
+	push dword @INTEGER
+	call _printf
+	add esp, 8
+	push dword [ebp - 4]
+	push dword [ebp - 8]
+	pop eax
+	sub dword [esp], eax
+mov eax, dword[@DSP+0]
+pop ebx
+mov dword[eax - 16], ebx
+	push dword [ebp - 16]
+	push dword @INTEGER
+	call _printf
+	add esp, 8
+	push dword [ebp - 4]
+	push dword [ebp - 8]
+	pop eax
 	imul eax, dword [esp]
 	mov dword [esp], eax
 mov eax, dword[@DSP+0]
 pop ebx
 mov dword[eax - 20], ebx
 	push dword [ebp - 20]
+	push dword @INTEGER
+	call _printf
+	add esp, 8
+	push dword [ebp - 4]
+	push dword [ebp - 8]
+	pop ecx
+	pop eax
+	idiv ecx
+	push eax
+mov eax, dword[@DSP+0]
+pop ebx
+mov dword[eax - 24], ebx
+	push dword [ebp - 24]
 	push dword @INTEGER
 	call _printf
 	add esp, 8
