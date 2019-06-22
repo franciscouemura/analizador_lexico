@@ -1,9 +1,15 @@
 program somar
 var
-	n1, n2, soma:integer;
+	n1, n2, soma, subtracao, multiplicacao, divisao:integer;
 begin
-	n1:=1;
+	n1:=10;
 	n2:=2;
 	soma := n1+n2;
 	write(soma);
+	subtracao := n1-n2;
+	write(subtracao);
+	multiplicacao := n1*n2;
+	write(multiplicacao);
+	divisao := n1/n2;
+	write(divisao);
 end.

@@ -1395,7 +1395,7 @@ public class Principal extends javax.swing.JFrame {
             fator();
             switch(opt){
                 case 1:
-                    //A39();
+                    A39();
                     break;
 
                 case 2:
@@ -1912,7 +1912,12 @@ public class Principal extends javax.swing.JFrame {
 	insereLinhaArquivo("	pop eax");
 	insereLinhaArquivo("	sub dword [esp], eax");
     }
-        
+     
+  public void A39(){
+	insereLinhaArquivo("	pop eax");
+	insereLinhaArquivo("	imul eax, dword [esp]");
+        insereLinhaArquivo("	mov dword [esp], eax");
+    }
     
     /*
     public void A39(){
