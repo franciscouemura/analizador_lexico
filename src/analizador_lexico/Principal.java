@@ -83,7 +83,7 @@ public class Principal extends javax.swing.JFrame {
         jTableTabelaDeSimbolos = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextAreaItensLexicos = new javax.swing.JTextArea();
-        jTabbedPaneMepa = new javax.swing.JTabbedPane();
+        textAreaAssembly = new java.awt.TextArea();
         label1 = new java.awt.Label();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
         textAreaMensagens = new java.awt.TextArea();
@@ -103,7 +103,6 @@ public class Principal extends javax.swing.JFrame {
         jMenuSobre = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1000, 600));
         setResizable(false);
 
         jButtonNovo.setText("Novo");
@@ -133,6 +132,8 @@ public class Principal extends javax.swing.JFrame {
 
         jButtonSair.setText("Sair");
 
+        jTabbedPanePainel.setToolTipText("");
+
         jTableTabelaDeSimbolos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -153,7 +154,7 @@ public class Principal extends javax.swing.JFrame {
         jScrollPane3.setViewportView(jTextAreaItensLexicos);
 
         jTabbedPanePainel.addTab("Iten Léxicos", jScrollPane3);
-        jTabbedPanePainel.addTab("Mepa", jTabbedPaneMepa);
+        jTabbedPanePainel.addTab("Assembly", textAreaAssembly);
 
         label1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         label1.setText("Mensagem");
@@ -255,7 +256,8 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonExecutarActionPerformed
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
-         variaveisLocais=0;
+        offsetVariavel = new ArrayList(); 
+        variaveisLocais=0;
          nivel = 0;
          rotulosData = new ArrayList<>();
         codigoAssembly = "";
@@ -274,7 +276,7 @@ public class Principal extends javax.swing.JFrame {
         erro = false;
         imprimeTabela();
         rodaAsm();
-        
+        textAreaAssembly.setText(codigoAssembly);
     
         
     }//GEN-LAST:event_jButtonCompilarActionPerformed
@@ -2096,11 +2098,11 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JTabbedPane jTabbedPaneMepa;
     private javax.swing.JTabbedPane jTabbedPanePainel;
     private javax.swing.JTable jTableTabelaDeSimbolos;
     private javax.swing.JTextArea jTextAreaItensLexicos;
     private java.awt.Label label1;
+    private java.awt.TextArea textAreaAssembly;
     private java.awt.TextArea textAreaMensagens;
     // End of variables declaration//GEN-END:variables
 }
