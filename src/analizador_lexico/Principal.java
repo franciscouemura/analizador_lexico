@@ -1366,7 +1366,7 @@ public class Principal extends javax.swing.JFrame {
                     break;
 
                 case 2:
-                    //A38();
+                    A38();
                     break;
            }
            expressaoL();
@@ -1906,7 +1906,12 @@ public class Principal extends javax.swing.JFrame {
   public void A37(){
 	insereLinhaArquivo("	pop eax");
 	insereLinhaArquivo("	add dword [esp], eax");
-}
+    }
+  
+  public void A38(){
+	insereLinhaArquivo("	pop eax");
+	insereLinhaArquivo("	sub dword [esp], eax");
+    }
         
     
     /*
