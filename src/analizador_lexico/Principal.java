@@ -28,6 +28,7 @@ public class Principal extends javax.swing.JFrame {
     ArrayList<String> rotulosData = new ArrayList<>();
     public String codigoAssembly;
     public int variaveisLocais;
+    Registro registroGlobal;
     /**
      * Creates new form Principal
      */
@@ -255,6 +256,8 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
          variaveisLocais=0;
+         nivel = 0;
+         rotulosData = new ArrayList<>();
         codigoAssembly = "";
         textAreaMensagens.setText("");
         texto = fonte.getText().toString();
@@ -1049,6 +1052,8 @@ public class Principal extends javax.swing.JFrame {
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr", ":=")){
                         lexema = analisadorLexico(texto);
+                        registroGlobal = new Registro();
+                        registroGlobal.setNome(lexema.getTexto());
                         expressao();
                         A22(registro);
                     }
@@ -1349,6 +1354,8 @@ public class Principal extends javax.swing.JFrame {
             opt = 2;
            }
            lexema = analisadorLexico(texto);
+           registroGlobal = new Registro();
+           registroGlobal.setNome(lexema.getTexto());
            termo();
            switch(opt){
                 case 1:
@@ -1380,6 +1387,8 @@ public class Principal extends javax.swing.JFrame {
                 opt = 2;
             }
             lexema = analisadorLexico(texto);
+            registroGlobal = new Registro();
+            registroGlobal.setNome(lexema.getTexto());
             fator();
             switch(opt){
                 case 1:
@@ -1786,8 +1795,10 @@ public class Principal extends javax.swing.JFrame {
 }
 */
     public void A22(Registro registro){
-        if(registro.getCategoria().equals("Variavel")|| registro.getCategoria().equals("Parametro")){   
-            insereLinhaArquivo(String.format("mov dword[@DSP-%d], dword[esp]",registro.getOffset()));
+        if(registro.getCategoria().equals("Variavel")){   
+            insereLinhaArquivo(String.format("mov eax, dword[@DSP+%d]",registro.getNivel()));
+            insereLinhaArquivo("pop ebx");
+            insereLinhaArquivo(String.format("mov dword[eax - %d], ebx",registro.getOffset()));
             //Falta implementar caso seja uma função
         }
     }
@@ -1932,6 +1943,7 @@ public class Principal extends javax.swing.JFrame {
     public void A45(){
 	insereLinhaArquivo("section .data");
 	insereLinhaArquivo(String.format("@DSP times %d db 0", (nivel+1)*4));
+        insereLinhaArquivo("@INTEGER: db '%d' , 0");
 }
     
     
@@ -1945,7 +1957,7 @@ public class Principal extends javax.swing.JFrame {
             }
         }
         
-        insereLinhaArquivo(String.format("add esp, %d", variaveis));
+        insereLinhaArquivo(String.format("add esp, %d", variaveis*4));
         insereLinhaArquivo("mov esp,ebp");
         insereLinhaArquivo("pop dword[@DSP+8]");
         insereLinhaArquivo("pop ebp");
@@ -1978,8 +1990,7 @@ public class Principal extends javax.swing.JFrame {
     
     
     public void A55(){
-	Registro registro = new Registro();
-	registro.setNome(lexema.getTexto());
+	Registro registro = registroGlobal;
 	if(tabelaSimbolos.temRegistroTodasTabelas(registro)){
 		registro = tabelaSimbolos.getEsseRegistro(registro);
 		String categoria = registro.getCategoria();
