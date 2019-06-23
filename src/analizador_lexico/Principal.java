@@ -57,7 +57,7 @@ public class Principal extends javax.swing.JFrame {
     String errorDescription;
     private ArrayList<String> palavrasReservadas = new ArrayList<>();
     private ArrayList<Lexema> detTipo = new ArrayList<>();
-    
+    int contadorRotulos =0;
     ItemTabela[] table = new ItemTabela[17];
     
     
@@ -256,6 +256,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonExecutarActionPerformed
 
     private void jButtonCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilarActionPerformed
+        contadorRotulos =0;
         offsetVariavel = new ArrayList(); 
         variaveisLocais=0;
          nivel = 0;
@@ -1154,6 +1155,7 @@ public class Principal extends javax.swing.JFrame {
     public void exp_write(boolean wln){
         if(comparaClasseLexema("cStr", lexema.getTexto())){
             A59(wln);
+            lexema = analisadorLexico(texto);
         } else {
             var_write();
         }
@@ -1922,6 +1924,7 @@ public class Principal extends javax.swing.JFrame {
   public void A40(){
 	insereLinhaArquivo("	pop ecx");
         insereLinhaArquivo("	pop eax");
+        insereLinhaArquivo("    mov edx,0");
 	insereLinhaArquivo("	idiv ecx");
         insereLinhaArquivo("	push eax");
     }
@@ -1956,6 +1959,10 @@ public class Principal extends javax.swing.JFrame {
 	insereLinhaArquivo("section .data");
 	insereLinhaArquivo(String.format("@DSP times %d db 0", (nivel+1)*4));
         insereLinhaArquivo("@INTEGER: db '%d' , 0");
+        
+        for(String s: rotulosData){
+            insereLinhaArquivo(s);
+        }
 }
     
     
@@ -2038,7 +2045,7 @@ public class Principal extends javax.swing.JFrame {
 */
 
     public void A59(boolean wln){
-	String rotuloString = "";	//criar rotulo _string
+	String rotuloString = geradorRotulo();	//criar rotulo _string
 	String endString = ", 0";
 	if(wln)
 		endString = ", 10, 0";
@@ -2048,6 +2055,11 @@ public class Principal extends javax.swing.JFrame {
 	insereLinhaArquivo("	add esp, 4");
 }
  
+    
+    public String geradorRotulo(){
+        contadorRotulos++;
+        return String.format("@string%d",contadorRotulos); 
+    }
 
         public void insereLinhaArquivo(String linha){
             codigoAssembly = codigoAssembly+linha+"\n";
