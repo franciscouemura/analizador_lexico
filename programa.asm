@@ -13,7 +13,20 @@ _main:
 	mov eax, dword[@DSP+0]
 	pop ebx
 	mov dword[eax - 4], ebx
-rotuloRepeat0:
+rotuloInWhile0:
+	push dword [ebp - 4]
+	push 3
+	pop eax
+	cmp dword [esp], eax
+	jg rotuloFalse3
+	mov dword [esp], 1
+	jmp rotuloFim2
+rotuloFalse3:
+	mov dword [esp], 0
+rotuloFim2:
+	pop eax
+	cmp eax, 0
+	je rotuloEndWhile1
 	push dword [ebp - 4]
 	push dword @INTEGER
 	call _printf
@@ -28,19 +41,8 @@ rotuloRepeat0:
 	mov eax, dword[@DSP+0]
 	pop ebx
 	mov dword[eax - 4], ebx
-	push dword [ebp - 4]
-	push 3
-	pop eax
-	cmp dword [esp], eax
-	jne rotuloFalse2
-	mov dword [esp], 1
-	jmp rotuloFim1
-rotuloFalse2:
-	mov dword [esp], 0
-rotuloFim1:
-	pop eax
-	cmp eax, 0
-	je rotuloRepeat0
+	jmp rotuloInWhile0
+rotuloEndWhile1:
 	add esp, 12
 	mov esp,ebp
 	pop dword[@DSP+8]

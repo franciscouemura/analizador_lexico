@@ -1030,14 +1030,14 @@ public class Principal extends javax.swing.JFrame {
     			imprimeErro("cRes", "until");
     		}
     	} else if(comparaClasseLexema("cRes", "while")){	//				while [A16] <expressao_logica> [A17] do <bloco> [A18] |
-    		//A16();
-            lexema = analisadorLexico(texto);
+    		ArrayList<String> rotulosWhile = A16();
+                lexema = analisadorLexico(texto);
                 expressao_logica();
-                //A17();
+                A17(rotulosWhile);
                 if(comparaClasseLexema("cRes", "do")){
                         lexema = analisadorLexico(texto);
                         bloco();
-                        //A18();
+                        A18(rotulosWhile);
                 } else {
                         imprimeErro("cRes", "do");
                 }
@@ -1810,26 +1810,27 @@ public class Principal extends javax.swing.JFrame {
 	
 	// jne rotulo _repeat
 }
-/*
-    public void A16(){
-        //criar rotulo entrada while
-        //criar rotulo saida while
-        insereLinhaArquivo("_while"); // para label while criada acima para entrada
+
+    public ArrayList<String> A16(){
+        ArrayList<String> rotulosWhile = new ArrayList<>();
+        rotulosWhile.add(String.format("rotuloInWhile%d",countRotulo++));//criar rotulo entrada while
+        rotulosWhile.add(String.format("rotuloEndWhile%d",countRotulo++));//criar rotulo saida while
+        insereLinhaArquivo(String.format("%s:", rotulosWhile.get(0))); // para label while criada acima para entrada
+        return rotulosWhile;
     }
     
-    
-    public void A17(){
-	insereLinhaArquivo(String.format(" pop eax"));
-	insereLinhaArquivo(String.format(" cmp eax, 1"));
-	
-	// jne rotulo _fim_while
-}
-    
-    public void A18(){
-        insereLinhaArquivo("jmp _while");//rotulo gerado em a16
-        insereLinhaArquivo("_fimWhile");//rotulo gerado em a16
+
+    public void A17(ArrayList<String> rotulosWhile){
+	insereLinhaArquivo(String.format("\tpop eax"));
+	insereLinhaArquivo(String.format("\tcmp eax, 0"));
+        insereLinhaArquivo(String.format("\tje %s",rotulosWhile.get(1)));
     }
-*/    
+
+    public void A18(ArrayList<String> rotulosWhile){
+        insereLinhaArquivo(String.format("\tjmp %s", rotulosWhile.get(0)));
+        insereLinhaArquivo(String.format("%s:", rotulosWhile.get(1)));
+    }
+
     public ArrayList<String> A19(){
 	ArrayList<String> rotulos = new ArrayList<>();
         rotulos.add(String.format("rotuloInElse%d", countRotulo++));
