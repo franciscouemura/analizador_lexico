@@ -1117,7 +1117,7 @@ public class Principal extends javax.swing.JFrame {
     public void var_read(){
        if(comparaClasseLexema("cId", lexema.getTexto())){
            if(idInTable("Variavel", lexema.getTexto())){
-                //A08();
+                A08();
                 lexema = analisadorLexico(texto);
                 var_readL();
            } else {
@@ -1154,7 +1154,7 @@ public class Principal extends javax.swing.JFrame {
     //<exp_write> ::= string A59 | <var_write>
     public void exp_write(boolean wln){
         if(comparaClasseLexema("cStr", lexema.getTexto())){
-            A59(wln);
+            A59(true);
             lexema = analisadorLexico(texto);
         } else {
             var_write();
@@ -1680,24 +1680,32 @@ public class Principal extends javax.swing.JFrame {
 		//Erro: identificador já declarado anteriormente
 	}
 }
-    
+*/    
     public void A08(){
-        TabelaSimbolos procura = procuraId(tabelaSimbolos);
-        Registro registro=null;
-        if(procura==null){
+        Registro registro = new Registro();
+        registro.setNome(lexema.getTexto());
+        if(!tabelaSimbolos.temRegistroTodasTabelas(registro)){
             //emitir uma mensagem apropriada dizendo que o mesmo ainda não foi declarado.
         }else{
-            for(Registro r: procura.getRegistros()){
-                registro = r;
-            }
+//            for(Registro r: procura.getRegistros()){
+//                registro = r;
+//            }
+            registro = tabelaSimbolos.getEsseRegistro(registro);
             if(registro.getCategoria().equals("Variavel") || registro.getCategoria().equals("Parametro")){
+                insereLinhaArquivo("\tmov edx, ebp");
+                insereLinhaArquivo(String.format("\tlea eax, [edx - %d] ", registro.getOffset()));
+                insereLinhaArquivo("\tpush eax");
+                insereLinhaArquivo("\tpush @INTEGER");
+                insereLinhaArquivo("\tcall _scanf");
+                insereLinhaArquivo("\tadd esp, 8");
+                
                 //gerar funcção de leitura
             }else{
                 // ERRO não é variavel nem parametro
             }
         }
     }
-*/
+
     
     public void A09(){
 	Registro registro = new Registro();
