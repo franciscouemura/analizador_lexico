@@ -29,6 +29,7 @@ public class Principal extends javax.swing.JFrame {
     public String codigoAssembly;
     public int variaveisLocais;
     Registro registroGlobal;
+    int countRotulo = 0;
     /**
      * Creates new form Principal
      */
@@ -259,6 +260,7 @@ public class Principal extends javax.swing.JFrame {
         contadorRotulos =0;
         offsetVariavel = new ArrayList(); 
         variaveisLocais=0;
+        countRotulo = 0;
          nivel = 0;
          rotulosData = new ArrayList<>();
         codigoAssembly = "";
@@ -360,7 +362,7 @@ public class Principal extends javax.swing.JFrame {
     public Lexema analisadorLexico(String texto) {
         Lexema item=null;
         if(index < texto.length()){
-            while(texto.charAt(index) <= ' ' && index < texto.length()){
+            while(index < texto.length() && texto.charAt(index) <= ' '){
                 if(texto.charAt(index) == '\n'){
                     linha++;
                     lastLine = index + 1;
@@ -437,11 +439,11 @@ public class Principal extends javax.swing.JFrame {
                                                     index++;
                                                 } else {
                                                     if (a.equals("<")) {
-                                                        if (a.charAt(index + 1) == '=') {
+                                                        if (texto.charAt(index + 1) == '=') {
                                                             item = new Lexema(String.format("%s%c", a, texto.charAt(index + 1)), "cLE", "Menor ou Igual", linha, coluna);
                                                             index = index + 2;
                                                         } else {
-                                                            if (a.charAt(index + 1) == '>') {
+                                                            if (texto.charAt(index + 1) == '>') {
                                                                 item = new Lexema(String.format("%s%c", a, texto.charAt(index + 1)), "cNE", "Diferente", linha, coluna);
                                                                 index = index + 2;
                                                             } else {
@@ -1038,13 +1040,13 @@ public class Principal extends javax.swing.JFrame {
     	} else if(comparaClasseLexema("cRes", "if")){	//				if <expressao_logica> [A19] then <bloco> [A20] <pfalsa> [A21]|
     		lexema = analisadorLexico(texto);
                 expressao_logica();
-                //A19();
+                ArrayList<String> rotulosIf = A19();
                 if(comparaClasseLexema("cRes", "then")){
                         lexema = analisadorLexico(texto);
                         bloco();
-                        //A20();
-                        pfalsa();
-                        //A21();
+                        A20(rotulosIf);
+                        pfalsa(rotulosIf);
+                        A21(rotulosIf);
                 } else {
                         imprimeErro("cRes", "then");
                 }
@@ -1067,6 +1069,8 @@ public class Principal extends javax.swing.JFrame {
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr", ":=")){
                         lexema = analisadorLexico(texto);
+                        registroGlobal = new Registro();
+                        registroGlobal.setNome(lexema.getTexto());
                         expressao();
                     }
                 }
@@ -1088,6 +1092,8 @@ public class Principal extends javax.swing.JFrame {
     public void idL(){
     	if(comparaClasseLexema("cAtr", ":=")){
     		lexema = analisadorLexico(texto);
+                registroGlobal = new Registro();
+                registroGlobal.setNome(lexema.getTexto());
     		expressao();
     	} else {
     		argumentos();
@@ -1205,18 +1211,20 @@ public class Principal extends javax.swing.JFrame {
     }*/
 
     //<pfalsa> ::= else [A25] <bloco> | 
-    public void pfalsa(){
+    public void pfalsa(ArrayList<String> rotulosIf){
        if(comparaClasseLexema("cRes", "else")){
-            //A25();
+            A25(rotulosIf,true);
             lexema = analisadorLexico(texto);
             bloco();
-      }
+      } else {
+           A25(rotulosIf,false);
+       }
     }
 
     //<expressao_logica> ::= <termo_logico> [A26] <expressao_logicaL>
     public void expressao_logica(){
         termo_logico();
-        //A26();
+        A26();
         expressao_logicaL();
     }
 
@@ -1225,6 +1233,7 @@ public class Principal extends javax.swing.JFrame {
         if(comparaClasseLexema("cRes", "or")){
             lexema = analisadorLexico(texto);
             termo_logico();
+            A26();
             expressao_logicaL();
         }
     }
@@ -1232,7 +1241,7 @@ public class Principal extends javax.swing.JFrame {
     //<termo_logico> ::= <fator_logico> [A27] <termo_logicoL>
     public void termo_logico(){
         fator_logico();
-        //A27();
+        A27();
         termo_logicoL();
     }
 
@@ -1241,7 +1250,7 @@ public class Principal extends javax.swing.JFrame {
         if(comparaClasseLexema("cRes", "and")){
             lexema = analisadorLexico(texto);
             fator_logico();
-            //A27();
+            A27();
             termo_logicoL();
         }
     }
@@ -1259,10 +1268,10 @@ public class Principal extends javax.swing.JFrame {
             fator_logico();
             //A28();
         } else if(comparaClasseLexema("cRes", "true")){
-            //A29();
+            A29();
             lexema = analisadorLexico(texto);
         } else if(comparaClasseLexema("cRes", "false")){
-            //A30();
+            A30();
             lexema = analisadorLexico(texto);
         } else {
             relacional();
@@ -1278,6 +1287,8 @@ public class Principal extends javax.swing.JFrame {
 
                                                                             // OK
     public void relacional(){
+        registroGlobal = new Registro();
+        registroGlobal.setNome(lexema.getTexto());
         expressao();
         int opt=0;
         if(comparaClasseLexema("cEQ", "=")){
@@ -1312,31 +1323,33 @@ public class Principal extends javax.swing.JFrame {
                }
            }
        }
+        registroGlobal = new Registro();
+        registroGlobal.setNome(lexema.getTexto());
         expressao();
         switch(opt){
             case 1:
-                //A31();
+                A31();
                 break;
 
             case 2:
-                //A32();
+                A32();
                 break;
 
             case 3:
-                //A33();
+                A33();
                 break;
 
                 
             case 4:
-                //A34();
+                A34();
                 break;
 
             case 5:
-                //A35();
+                A35();
                 break;
 
             case 6:
-                //A36();
+                A36();
                 break;
                 
        }
@@ -1577,9 +1590,9 @@ public class Principal extends javax.swing.JFrame {
 	registro.setOffset(offsetVariavel.get(nivel));
 	tabelaSimbolos.addRegistro(registro);
 	insereLinhaArquivo("global _main");
-	insereLinhaArquivo("extern _printf");
-	insereLinhaArquivo("extern _putchar");
-	insereLinhaArquivo("extern _scanf");
+	insereLinhaArquivo("\textern _printf");
+	insereLinhaArquivo("\textern _putchar");
+	insereLinhaArquivo("\textern _scanf");
 	insereLinhaArquivo("section .text");
 }
     
@@ -1795,23 +1808,29 @@ public class Principal extends javax.swing.JFrame {
         insereLinhaArquivo("jmp _while");//rotulo gerado em a16
         insereLinhaArquivo("_fimWhile");//rotulo gerado em a16
     }
-    
-    public void A19(){
-	// ???????????
-}
-    public void A20(){
-        insereLinhaArquivo("jmp _fimWhile"); // rotulo gerado em a16
+*/    
+    public ArrayList<String> A19(){
+	ArrayList<String> rotulos = new ArrayList<>();
+        rotulos.add(String.format("rotuloInElse%d", countRotulo++));
+        rotulos.add(String.format("rotuloEndIf%d", countRotulo++));
+        insereLinhaArquivo("	cmp dword [esp],0");
+        insereLinhaArquivo(String.format("	je %s", rotulos.get(0)));
+        return rotulos;
+    }
+    public void A20(ArrayList<String> rotulos){
+        insereLinhaArquivo(String.format("	jmp %s", rotulos.get(1)));
     }
     
-    public void A21() {
-	// gerar rotulo _fim_if
-}
-*/
+    public void A21(ArrayList<String> rotulos) {
+	insereLinhaArquivo(String.format("%s:", rotulos.get(1)));
+        // gerar rotulo _fim_if
+    }
+
     public void A22(Registro registro){
         if(registro.getCategoria().equals("Variavel")){   
-            insereLinhaArquivo(String.format("mov eax, dword[@DSP+%d]",registro.getNivel()));
-            insereLinhaArquivo("pop ebx");
-            insereLinhaArquivo(String.format("mov dword[eax - %d], ebx",registro.getOffset()));
+            insereLinhaArquivo(String.format("\tmov eax, dword[@DSP+%d]",registro.getNivel()));
+            insereLinhaArquivo("\tpop ebx");
+            insereLinhaArquivo(String.format("\tmov dword[eax - %d], ebx",registro.getOffset()));
             //Falta implementar caso seja uma função
         }
     }
@@ -1827,92 +1846,130 @@ public class Principal extends javax.swing.JFrame {
 		// Erro numero argumentos
 	}
 }
+*/    
+    public void A25(ArrayList<String> rotulos, boolean pf){
+	insereLinhaArquivo(String.format("%s:", rotulos.get(0)));
+        if(!pf)
+            insereLinhaArquivo(String.format("\tjmp %s", rotulos.get(1)));
+        // gerar rotulo _else
+    }
     
-    public void A25(){
-	// gerar rotulo _else
-}
-    
+    public void A26(){
+        String rotuloTrue = String.format("rotulo_true%d", countRotulo++); // Criar rotulo _true
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); //Criar rotulo _fim
+	insereLinhaArquivo(String.format("	cmp dword [esp + 4], 1"));
+	insereLinhaArquivo(String.format("	je %s", rotuloTrue));	// je rotulo _false
+	insereLinhaArquivo(String.format("	cmp dword [esp], 1"));
+	insereLinhaArquivo(String.format("	je %s", rotuloTrue));	//	je rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp + 4], 0"));
+	insereLinhaArquivo(String.format("	jmp %s", rotuloFim));	// jmp rotulo _fim
+	insereLinhaArquivo(String.format("%s:", rotuloTrue));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp + 4], 1"));
+	insereLinhaArquivo(String.format("%s:", rotuloFim));		// gerar rotulo _fim
+	insereLinhaArquivo(String.format("	add esp, 4"));
+    }
+  
     public void A27(){
-	String rotuloFalse = ""; // Criar rotulo _false
-	String rotuloFim = ""; //Criar rotulo _fim
+	String rotuloFalse = String.format("rotuloFalse%d", countRotulo++); // Criar rotulo _false
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); //Criar rotulo _fim
 	insereLinhaArquivo(String.format("	cmp dword [esp + 4], 0"));
 	insereLinhaArquivo(String.format("	je %s", rotuloFalse));	// je rotulo _false
 	insereLinhaArquivo(String.format("	cmp dword [esp], 0"));
 	insereLinhaArquivo(String.format("	je %s", rotuloFalse));	//	je rotulo _false
 	insereLinhaArquivo(String.format("	mov dword [esp + 4], 1"));
 	insereLinhaArquivo(String.format("	jmp %s", rotuloFim));	// jmp rotulo _fim
-	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("%s:", rotuloFalse));	// gerar rotulo _false
 	insereLinhaArquivo(String.format("	mov dword [esp + 4], 0"));
-	insereLinhaArquivo(String.format("%s", rotuloFim));		// gerar rotulo _fim
+	insereLinhaArquivo(String.format("%s:", rotuloFim));		// gerar rotulo _fim
 	insereLinhaArquivo(String.format("	add esp, 4"));
-}
-    
+    }
+
     public void A29(){
 	insereLinhaArquivo(String.format("	push 1"));
-}
+    }
     
+    public void A30(){
+	insereLinhaArquivo(String.format("	push 0"));
+    }
+
     public void A31(){
-	String rotuloFim = ""; // criar rotulo _fim
-	String rotuloFalse = ""; // criar rotulo _false
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); // criar rotulo _fim
+	String rotuloFalse = String.format("rotuloFalse%d", countRotulo++); // criar rotulo _false
 	insereLinhaArquivo(String.format("	pop eax"));
 	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
 	insereLinhaArquivo(String.format("	jne %s", rotuloFalse));
 	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
-	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+        insereLinhaArquivo(String.format("	jmp %s", rotuloFim));
+	insereLinhaArquivo(String.format("%s:", rotuloFalse));	// gerar rotulo _false
 	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
-	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+	insereLinhaArquivo(String.format("%s:", rotuloFim));	// gerar rotulo _fim
 }
     
     public void A32(){
-	String rotuloFim = ""; // criar rotulo _fim
-	String rotuloFalse = ""; // criar rotulo _false
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); // criar rotulo _fim
+	String rotuloFalse = String.format("rotuloFalse%d", countRotulo++); // criar rotulo _false
 	insereLinhaArquivo(String.format("	pop eax"));
 	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
 	insereLinhaArquivo(String.format("	jle %s", rotuloFalse));
 	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
-	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+        insereLinhaArquivo(String.format("	jmp %s", rotuloFim));
+	insereLinhaArquivo(String.format("%s:", rotuloFalse));	// gerar rotulo _false
 	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
-	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+	insereLinhaArquivo(String.format("%s:", rotuloFim));	// gerar rotulo _fim
 }
     
     public void A33(){
-	String rotuloFim = ""; // criar rotulo _fim
-	String rotuloFalse = ""; // criar rotulo _false
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); // criar rotulo _fim
+	String rotuloFalse = String.format("rotuloFalse%d", countRotulo++); // criar rotulo _false
 	insereLinhaArquivo(String.format("	pop eax"));
 	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
 	insereLinhaArquivo(String.format("	jl %s", rotuloFalse));
 	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
-	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+        insereLinhaArquivo(String.format("	jmp %s", rotuloFim));
+	insereLinhaArquivo(String.format("%s:", rotuloFalse));	// gerar rotulo _false
 	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
-	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+	insereLinhaArquivo(String.format("%s:", rotuloFim));	// gerar rotulo _fim
 }
     
     public void A34(){
-	String rotuloFim = ""; // criar rotulo _fim
-	String rotuloFalse = ""; // criar rotulo _false
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); // criar rotulo _fim
+	String rotuloFalse = String.format("rotuloFalse%d", countRotulo++); // criar rotulo _false
 	insereLinhaArquivo(String.format("	pop eax"));
 	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
 	insereLinhaArquivo(String.format("	jge %s", rotuloFalse));
 	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
-	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+        insereLinhaArquivo(String.format("	jmp %s", rotuloFim));
+	insereLinhaArquivo(String.format("%s:", rotuloFalse));	// gerar rotulo _false
 	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
-	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
+	insereLinhaArquivo(String.format("%s:", rotuloFim));	// gerar rotulo _fim
 }
     
     public void A35(){
-	String rotuloFim = ""; // criar rotulo _fim
-	String rotuloFalse = ""; // criar rotulo _false
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); // criar rotulo _fim
+	String rotuloFalse = String.format("rotuloFalse%d", countRotulo++); // criar rotulo _false
 	insereLinhaArquivo(String.format("	pop eax"));
 	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
 	insereLinhaArquivo(String.format("	jg %s", rotuloFalse));
 	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
-	insereLinhaArquivo(String.format("%s", rotuloFalse));	// gerar rotulo _false
+        insereLinhaArquivo(String.format("	jmp %s", rotuloFim));
+	insereLinhaArquivo(String.format("%s:", rotuloFalse));	// gerar rotulo _false
 	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
-	insereLinhaArquivo(String.format("%s", rotuloFim));	// gerar rotulo _fim
-}
+	insereLinhaArquivo(String.format("%s:", rotuloFim));	// gerar rotulo _fim
+    }
     
-    */
-    
+    public void A36(){
+	String rotuloFim = String.format("rotuloFim%d", countRotulo++); // criar rotulo _fim
+	String rotuloFalse = String.format("rotuloFalse%d", countRotulo++); // criar rotulo _false
+	insereLinhaArquivo(String.format("	pop eax"));
+	insereLinhaArquivo(String.format("	cmp dword [esp], eax"));
+	insereLinhaArquivo(String.format("	je %s", rotuloFalse));
+	insereLinhaArquivo(String.format("	mov dword [esp], 1"));
+        insereLinhaArquivo(String.format("	jmp %s", rotuloFim));
+	insereLinhaArquivo(String.format("%s:", rotuloFalse));	// gerar rotulo _false
+	insereLinhaArquivo(String.format("	mov dword [esp], 0"));
+	insereLinhaArquivo(String.format("%s:", rotuloFim));	// gerar rotulo _fim
+    }
+
   public void A37(){
 	insereLinhaArquivo("	pop eax");
 	insereLinhaArquivo("	add dword [esp], eax");
@@ -1945,10 +2002,10 @@ public class Principal extends javax.swing.JFrame {
         String rotulo= new String();
         rotulo = tabelaSimbolos.getRotulo();
         insereLinhaArquivo(String.format("%s:",rotulo));
-        insereLinhaArquivo("push ebp");
-        insereLinhaArquivo(String.format("push dword[@DSP + %d]", nivel*4));
-        insereLinhaArquivo("mov ebp,esp");
-        insereLinhaArquivo(String.format("mov dword[@DSP +%d],ebp", nivel*4));
+        insereLinhaArquivo("\tpush ebp");
+        insereLinhaArquivo(String.format("\tpush dword[@DSP + %d]", nivel*4));
+        insereLinhaArquivo("\tmov ebp,esp");
+        insereLinhaArquivo(String.format("\tmov dword[@DSP +%d],ebp", nivel*4));
         
         int nVariaveis =0;
         for(Registro r: tabelaSimbolos.getRegistros()){
@@ -1956,7 +2013,7 @@ public class Principal extends javax.swing.JFrame {
                 nVariaveis++;
             }
         }
-        insereLinhaArquivo(String.format("sub esp,%d", nVariaveis*4));
+        insereLinhaArquivo(String.format("\tsub esp,%d", nVariaveis*4));
         
     }
         
@@ -1965,8 +2022,8 @@ public class Principal extends javax.swing.JFrame {
     
     public void A45(){
 	insereLinhaArquivo("section .data");
-	insereLinhaArquivo(String.format("@DSP times %d db 0", (nivel+1)*4));
-        insereLinhaArquivo("@INTEGER: db '%d' , 0");
+	insereLinhaArquivo(String.format("\t@DSP times %d db 0", (nivel+1)*4));
+        insereLinhaArquivo("\t@INTEGER: db '%d' , 0");
         
         for(String s: rotulosData){
             insereLinhaArquivo(s);
@@ -1984,11 +2041,11 @@ public class Principal extends javax.swing.JFrame {
             }
         }
         
-        insereLinhaArquivo(String.format("add esp, %d", variaveis*4));
-        insereLinhaArquivo("mov esp,ebp");
-        insereLinhaArquivo("pop dword[@DSP+8]");
-        insereLinhaArquivo("pop ebp");
-        insereLinhaArquivo("ret");
+        insereLinhaArquivo(String.format("\tadd esp, %d", variaveis*4));
+        insereLinhaArquivo("\tmov esp,ebp");
+        insereLinhaArquivo("\tpop dword[@DSP+8]");
+        insereLinhaArquivo("\tpop ebp");
+        insereLinhaArquivo("\tret");
     }
     
     
@@ -2057,7 +2114,7 @@ public class Principal extends javax.swing.JFrame {
 	String endString = ", 0";
 	if(wln)
 		endString = ", 10, 0";
-	rotulosData.add(String.format("%s db %s %s", rotuloString, lexema.getTexto(), endString));
+	rotulosData.add(String.format("\t%s db %s %s", rotuloString, lexema.getTexto(), endString));
 	insereLinhaArquivo(String.format("	push %s", rotuloString));
 	insereLinhaArquivo("	call _printf");
 	insereLinhaArquivo("	add esp, 4");
