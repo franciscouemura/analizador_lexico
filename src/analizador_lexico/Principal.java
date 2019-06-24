@@ -831,19 +831,20 @@ public class Principal extends javax.swing.JFrame {
     public void funcao(){
     	if(comparaClasseLexema("cId",lexema.getTexto())){
             Lexema aux = lexema;
-            //Registro ultimoId = A05();
-    		lexema = analisadorLexico(texto);
-    		parametros();
-            //A48();
+            Registro ultimoId = A05();
+            lexema = analisadorLexico(texto);
+            countParametros=0;
+            parametros();
+            A48(countParametros);
             detTipo.add(aux);
     		if(comparaClasseLexema("cDPto",":")){
-    			lexema = analisadorLexico(texto);
-    			tipo_simples("Funcao");
-                //A47(ultimoId);
-    			if(comparaClasseLexema("cPVir",";")){
-    				lexema = analisadorLexico(texto);
-    				corpo();
-                    //A56();
+                    lexema = analisadorLexico(texto);
+                    tipo_simples("Funcao");
+                    A47(ultimoId);
+                    if(comparaClasseLexema("cPVir",";")){
+                        lexema = analisadorLexico(texto);
+                        corpo();
+                        A56();
     				if(comparaClasseLexema("cPVir",";")){
     					lexema = analisadorLexico(texto);
     					rotina();
@@ -1482,9 +1483,12 @@ public class Principal extends javax.swing.JFrame {
 
     //<funcao2> ::= id_funcao <argumentos> [A42]
     public void funcao2(){
+        Registro ultimoId = new Registro();
+        ultimoId.setNome(lexema.getTexto());
+        ultimoId = tabelaSimbolos.getEsseRegistro(ultimoId);
         lexema = analisadorLexico(texto);
         argumentos();
-        //A42();
+        A42(ultimoId);
     }
 
     //<procedimento2> ::= id_procedimento <argumentos> A23();
@@ -1678,7 +1682,7 @@ public class Principal extends javax.swing.JFrame {
         }
         return resultado;
     }
-    
+*/    
     
     public Registro A05(){
 	Registro registro = new Registro();
@@ -1688,22 +1692,24 @@ public class Principal extends javax.swing.JFrame {
 		registro.setNivel(nivel);
 		registro.setCategoria("Funcao");
 		registro.setRotulo(lexema.getTexto());
-		tabelaSimbolos.addRegistro(registro);
-		TabelaSimbolos novaTs = new TabelaSimbolos();
+                TabelaSimbolos novaTs = new TabelaSimbolos();
 		novaTs.setTabelaPai(tabelaSimbolos);
-		tabelaSimbolos = novaTs;						// Por este motivo, add na acao 56:  tabelaSimbolos = tabelaSimbolos.getTabelaPai();
-
-		//Inserir o identificador da função, com todas as suas informações, na nova tabela, para que ela possa ser localizada pela atrubuição em <comando>.-----??
-
+                registro.setTabelaSimbolos(novaTs);
+		tabelaSimbolos.addRegistro(registro);
+//                novaTs.addRegistro(registro);
+		tabelaSimbolos = novaTs;
+                // Por este motivo, add na acao 56:  tabelaSimbolos = tabelaSimbolos.getTabelaPai();
 		offsetVariavel.add(0);
+                offsetVariavel.set(nivel, offsetVariavel.get(nivel)+4); //SIZEOF_INT
+                tabelaSimbolos.setRotulo(registro.getNome());
+                currentFuncProc = registro.getNome();
 	} else {
 		//Erro: identificador já declarado anteriormente
 		return null;
 	}
 	return registro;
-}
+    }
     
-*/    
     public void A07(){
 	Registro registro = new Registro();
 	registro.setNome(lexema.getTexto());
@@ -2023,7 +2029,16 @@ public class Principal extends javax.swing.JFrame {
    
     public void A41(){
 	insereLinhaArquivo(String.format("	push %d", Integer.parseInt(lexema.getTexto())));
-}
+    }
+    
+    public void A42(Registro ultimoId){
+        if(ultimoId.getNumeroParametros()==countParametros){
+            insereLinhaArquivo(String.format("\tcall %s",ultimoId.getTabelaSimbolos().getRotulo()));
+            insereLinhaArquivo(String.format("\tadd esp, %d", ultimoId.getNumeroParametros()*4));
+        } else {
+            //Erro: numero argumentos
+        }
+    }
     
     public void A44(){
         String rotulo= new String();
@@ -2036,7 +2051,7 @@ public class Principal extends javax.swing.JFrame {
         
         int nVariaveis =0;
         for(Registro r: tabelaSimbolos.getRegistros()){
-            if(r.getCategoria().equals("Variavel")){
+            if(r.getCategoria().equals("Variavel") || r.getCategoria().equals("Funcao")){
                 nVariaveis++;
             }
         }
@@ -2075,15 +2090,10 @@ public class Principal extends javax.swing.JFrame {
         insereLinhaArquivo("\tret");
     }
     
-    
-    /*
     public void A47(Registro ultimoId){
 	ultimoId.setNumeroParametros(tabelaSimbolos.getNumeroRegistroParametro());
-}
-    
-    
-*/
-    
+    }
+  
     public void A48(int nParametros){
         Registro r = new Registro();
         r.setNome(currentFuncProc);
@@ -2170,7 +2180,19 @@ public class Principal extends javax.swing.JFrame {
 		return null;
 	}
 	return registro;
-}
+    }
+    
+    public void A58(Registro ultimoId){
+        if(tabelaSimbolos.temRegistro(ultimoId)){
+            if(ultimoId.getCategoria().equals("Funcao")){
+                if(ultimoId.getNivel()!=nivel){
+                    //Erro: id deve corresponder a funcao corrente
+                }
+            }
+        } else {
+            //Erro: id nao declarado
+        }
+    }
 
     public void A59(boolean wln){
 	String rotuloString = geradorRotulo();	//criar rotulo _string

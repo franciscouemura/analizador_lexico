@@ -13,9 +13,7 @@ sum:
 	push dword [ebp + 12]
 	pop eax
 	add dword [esp], eax
-	mov eax, dword[@DSP+0]
-	pop ebx
-	mov dword[eax - 4], ebx
+	mov eax, [esp]
 	add esp, 0
 	mov ebp, esp
 	pop dword[@DSP+4]
@@ -26,7 +24,7 @@ _main:
 	push dword[@DSP + 0]
 	mov ebp,esp
 	mov dword[@DSP +0],ebp
-	sub esp,4
+	sub esp,8
 	push 0
 	mov eax, dword[@DSP+0]
 	pop ebx
@@ -35,6 +33,10 @@ _main:
 	push 1
 	call sum
 	add esp, 8
+	push eax
+	mov eax, dword[@DSP+0]
+	pop ebx
+	mov dword[eax - 4], ebx
 	push dword [ebp - 4]
 	push dword @INTEGER
 	call _printf
