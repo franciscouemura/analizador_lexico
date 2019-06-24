@@ -56,10 +56,16 @@ public class TabelaSimbolos {
             if(r.getNome().equals(registro.getNome()))
                 return r;
         }
-        return this.tabelaPai.getEsseRegistro(registro);
+        if(this.tabelaPai!=null){
+            return this.tabelaPai.getEsseRegistro(registro);
+        } else {
+            return null;
+        }
     }
     
     public boolean temRegistro(Registro registro){
+        if(registros==null)
+            return false;
         for(Registro r : registros){
             if(registro.getNome().equals(r.getNome()))
                 return true;

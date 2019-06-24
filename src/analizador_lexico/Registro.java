@@ -16,13 +16,21 @@ public class Registro {
     //private String tipo;
     private int offset;
     private int numeroParametros;
-    //private String rotulo;
+    private String rotulo;
     private TabelaSimbolos tabelaSimbolos;
 
     public String getNome() {
         return nome;
     }
+    
+    public String getRotulo(){
+        return this.rotulo;
+    }
 
+    public void setRotulo(String rotulo){
+        this.rotulo = rotulo;
+    }
+    
     public void setNome(String nome) {
         this.nome = nome;
     }
