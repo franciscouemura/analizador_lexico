@@ -3,18 +3,25 @@ global _main
 	extern _putchar
 	extern _scanf
 section .text
-sum:
+fat:
 	push ebp
 	push dword[@DSP + 4]
 	mov ebp,esp
 	mov dword[@DSP +4],ebp
-	sub esp,0
-	push dword [ebp + 16]
-	push dword [ebp + 12]
+	sub esp,8
+	push 1
+	mov eax, dword[@DSP+4]
+	pop ebx
+	mov dword[eax - 8], ebx
+	push 2
+	mov eax, dword[@DSP+4]
+	pop ebx
+	mov dword[eax - 12], ebx
+	push dword [ebp - 8]
+	push dword [ebp - 12]
 	pop eax
 	add dword [esp], eax
-	mov eax, [esp]
-	add esp, 0
+	add esp, 8
 	mov ebp, esp
 	pop dword[@DSP+4]
 	pop ebp
@@ -25,15 +32,10 @@ _main:
 	mov ebp,esp
 	mov dword[@DSP +0],ebp
 	sub esp,8
-	push 0
-	mov eax, dword[@DSP+0]
-	pop ebx
-	mov dword[eax - 4], ebx
-	push 1
-	push 1
-	call sum
-	add esp, 8
-	push eax
+sub esp, 4
+	push 2
+	call fat
+	add esp, 4
 	mov eax, dword[@DSP+0]
 	pop ebx
 	mov dword[eax - 4], ebx

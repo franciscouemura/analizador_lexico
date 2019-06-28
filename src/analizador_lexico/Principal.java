@@ -1487,6 +1487,7 @@ public class Principal extends javax.swing.JFrame {
         ultimoId.setNome(lexema.getTexto());
         ultimoId = tabelaSimbolos.getEsseRegistro(ultimoId);
         lexema = analisadorLexico(texto);
+        A60();
         argumentos();
         A42(ultimoId);
     }
@@ -1864,10 +1865,15 @@ public class Principal extends javax.swing.JFrame {
 
     public void A22(Registro registro){
         if(registro.getCategoria().equals("Variavel")){   
-            insereLinhaArquivo(String.format("\tmov eax, dword[@DSP+%d]",registro.getNivel()));
+            insereLinhaArquivo(String.format("\tmov eax, dword[@DSP+%d]",registro.getNivel()*4));
             insereLinhaArquivo("\tpop ebx");
             insereLinhaArquivo(String.format("\tmov dword[eax - %d], ebx",registro.getOffset()));
             //Falta implementar caso seja uma função
+        }else{
+            if(registro.getCategoria().equals("Funcao")){
+                insereLinhaArquivo("pop eax");
+                insereLinhaArquivo("mov dword[ebp +"+(12+registro.getNumeroParametros()*4)+"], eax");
+            }
         }
     }
 
@@ -2205,6 +2211,9 @@ public class Principal extends javax.swing.JFrame {
 	insereLinhaArquivo("	add esp, 4");
 }
  
+    public void A60(){
+        insereLinhaArquivo("\tsub esp, 4");
+    }
     
     public String geradorRotulo(){
         contadorRotulos++;
