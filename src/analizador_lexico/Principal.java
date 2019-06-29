@@ -1703,6 +1703,7 @@ public class Principal extends javax.swing.JFrame {
 		tabelaSimbolos.addRegistro(registro);
 //                novaTs.addRegistro(registro);
 		tabelaSimbolos = novaTs;
+                tabelaSimbolos.addRegistro(registro);
                 // Por este motivo, add na acao 56:  tabelaSimbolos = tabelaSimbolos.getTabelaPai();
 		offsetVariavel.add(0);
                 offsetVariavel.set(nivel, offsetVariavel.get(nivel)); //SIZEOF_INT
@@ -2060,7 +2061,7 @@ public class Principal extends javax.swing.JFrame {
         
         int nVariaveis =0;
         for(Registro r: tabelaSimbolos.getRegistros()){
-            if(r.getCategoria().equals("Variavel") || r.getCategoria().equals("Funcao")){
+            if(r.getCategoria().equals("Variavel")){
                 nVariaveis++;
             }
         }
