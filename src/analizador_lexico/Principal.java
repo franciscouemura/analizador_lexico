@@ -2107,11 +2107,19 @@ public class Principal extends javax.swing.JFrame {
     public void A48(int nParametros){
         Registro r = new Registro();
         r.setNome(currentFuncProc);
-        tabelaSimbolos.getTabelaPai().getEsseRegistro(r).setNumeroParametros(nParametros);
+        r = tabelaSimbolos.getTabelaPai().getEsseRegistro(r);
+        r.setNumeroParametros(nParametros);
         int n = 0;
-        for(int i = 0; i<nParametros; i++){
-            n = 12 + (4*(nParametros-(i+1)));
-            tabelaSimbolos.getRegistros().get(i).setOffset(n);
+        if(r.getCategoria().equals("Procedimento")){
+            for(int i = 0; i<nParametros; i++){
+                n = 12 + (4*(nParametros-(i+1)));
+                tabelaSimbolos.getRegistros().get(i).setOffset(n);
+            }
+        } else if(r.getCategoria().equals("Funcao")){
+            for(int i = 1; i<nParametros+1; i++){
+                n = 12 + (4*(nParametros-i));
+                tabelaSimbolos.getRegistros().get(i).setOffset(n);
+            }
         }
     }
     
