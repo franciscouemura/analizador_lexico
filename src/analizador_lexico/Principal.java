@@ -1068,6 +1068,8 @@ public class Principal extends javax.swing.JFrame {
     	} else if(comparaClasseLexema("cId", lexema.getTexto())){	//	id_variavel [A49] := <expressao> [A22] |
                                                                                                 // OK
     		if(idInTable("Variavel", lexema.getTexto()) || idInTable("Funcao", lexema.getTexto())){
+                    Registro ultimoId= new Registro();
+                    ultimoId.setNome(lexema.getTexto());
                 if(idInTable("Variavel", lexema.getTexto())){
                     registro = A49();
                     lexema = analisadorLexico(texto);
@@ -1079,14 +1081,16 @@ public class Principal extends javax.swing.JFrame {
                         A22(registro);
                     }
                 } else {                    // id_funcao [A58] := <expressao> [A22] |
-                                                                                            // OK
-                    //A58();      
+                    ultimoId.setCategoria("Funcao");
+                    ultimoId = A58(ultimoId);  
+                    
                     lexema = analisadorLexico(texto);
                     if(comparaClasseLexema("cAtr", ":=")){
                         lexema = analisadorLexico(texto);
                         registroGlobal = new Registro();
                         registroGlobal.setNome(lexema.getTexto());
                         expressao();
+                        A22(ultimoId);
                     }
                 }
                 //A22();
@@ -1701,7 +1705,7 @@ public class Principal extends javax.swing.JFrame {
 		tabelaSimbolos = novaTs;
                 // Por este motivo, add na acao 56:  tabelaSimbolos = tabelaSimbolos.getTabelaPai();
 		offsetVariavel.add(0);
-                offsetVariavel.set(nivel, offsetVariavel.get(nivel)+4); //SIZEOF_INT
+                offsetVariavel.set(nivel, offsetVariavel.get(nivel)); //SIZEOF_INT
                 tabelaSimbolos.setRotulo(registro.getNome());
                 currentFuncProc = registro.getNome();
 	} else {
@@ -1871,8 +1875,7 @@ public class Principal extends javax.swing.JFrame {
             //Falta implementar caso seja uma função
         }else{
             if(registro.getCategoria().equals("Funcao")){
-                insereLinhaArquivo("pop eax");
-                insereLinhaArquivo("mov dword[ebp +"+(12+registro.getNumeroParametros()*4)+"], eax");
+                insereLinhaArquivo("\tpop dword[ebp +"+(12+registro.getNumeroParametros()*4)+"]");
             }
         }
     }
@@ -2188,16 +2191,21 @@ public class Principal extends javax.swing.JFrame {
 	return registro;
     }
     
-    public void A58(Registro ultimoId){
+    public Registro A58(Registro ultimoId){
+        Registro esse= null;
         if(tabelaSimbolos.temRegistro(ultimoId)){
+            ultimoId = tabelaSimbolos.getEsseRegistro(ultimoId);
             if(ultimoId.getCategoria().equals("Funcao")){
                 if(ultimoId.getNivel()!=nivel){
                     //Erro: id deve corresponder a funcao corrente
+                }else{
+                    esse = tabelaSimbolos.getEsseRegistro(ultimoId);
                 }
             }
         } else {
             //Erro: id nao declarado
         }
+        return esse;
     }
 
     public void A59(boolean wln){
