@@ -544,7 +544,7 @@ public class Principal extends javax.swing.JFrame {
         
         for(String s: this.palavrasReservadas){
             if(s.toLowerCase().equals(c.toLowerCase())){
-                resultado = new Lexema(c, "cRes", "Palavra Reservada", linha, coluna);
+                resultado = new Lexema(c.toLowerCase(), "cRes", "Palavra Reservada", linha, coluna);
             }
         }
         if(resultado ==null){
@@ -585,7 +585,7 @@ public class Principal extends javax.swing.JFrame {
     			corpo();
     			if(comparaClasseLexema("cPto",".")){
                     A45();
-    				lexema = analisadorLexico(texto);
+//    				lexema = analisadorLexico(texto);
     			} else {
     				
     				imprimeErro("cPto", ".");
@@ -1036,6 +1036,7 @@ public class Principal extends javax.swing.JFrame {
     		if(comparaClasseLexema("cRes", "until")){
                     lexema = analisadorLexico(texto);
                     expressao_logica();
+                    
                     A15(rotuloRepeat);
     		} else {
     			imprimeErro("cRes", "until");
@@ -1133,7 +1134,7 @@ public class Principal extends javax.swing.JFrame {
 
     //<sentencasL> ::= <sentencas> | vazio
     public void sentencasL(){
-       if(!comparaClasseLexema("cRes","end")){
+       if(!comparaClasseLexema("cRes","end") && !comparaClasseLexema("cRes","until")){
            sentencas();
        }
     }
@@ -2060,10 +2061,12 @@ public class Principal extends javax.swing.JFrame {
         insereLinhaArquivo(String.format("\tmov dword[@DSP +%d],ebp", nivel*4));
         
         int nVariaveis =0;
-        for(Registro r: tabelaSimbolos.getRegistros()){
-            if(r.getCategoria().equals("Variavel")){
-                nVariaveis++;
+        if(tabelaSimbolos!=null && tabelaSimbolos.getRegistros()!=null){
+            for(Registro r: tabelaSimbolos.getRegistros()){
+                if(r.getCategoria().equals("Variavel")){
+                    nVariaveis++;
             }
+        }
         }
         insereLinhaArquivo(String.format("\tsub esp,%d", nVariaveis*4));
         
@@ -2087,9 +2090,11 @@ public class Principal extends javax.swing.JFrame {
         
         //verifica quantidade de variaveis locais
         int variaveis =0;
-        for(Registro r: tabelaSimbolos.getRegistros()){
-            if(r.getNivel()==nivel && r.getCategoria().equals("Variavel")){
-                variaveis++;
+        if(tabelaSimbolos!=null && tabelaSimbolos.getRegistros()!=null){
+            for(Registro r: tabelaSimbolos.getRegistros()){
+                if(r.getNivel()==nivel && r.getCategoria().equals("Variavel")){
+                    variaveis++;
+                }
             }
         }
         
@@ -2261,9 +2266,9 @@ public class Principal extends javax.swing.JFrame {
             String caminho = geraArquivoAsm().getAbsolutePath();
             System.out.print(caminho);
             Runtime.getRuntime().exec("nasm -f win32 ./programa.asm -o ./programa.o");
-            Runtime.getRuntime().exec("gcc ./programa.o -o ./programa.exe");
+            Runtime.getRuntime().exec("gcc ./programa.o -o ./prog.exe");
             
-            String commando = "cmd /c start cmd.exe /K \"programa\"";
+            String commando = "cmd /c start cmd.exe /C \"programa\"";
             Runtime.getRuntime().exec(commando);
             
             

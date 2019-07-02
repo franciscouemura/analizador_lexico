@@ -52,9 +52,11 @@ public class TabelaSimbolos {
     }
 
     public Registro getEsseRegistro(Registro registro){
-        for(Registro r : this.registros){
-            if(r.getNome().equals(registro.getNome()))
-                return r;
+        if(this.registros!=null){
+            for(Registro r : this.registros){
+                if(r.getNome().equals(registro.getNome()))
+                    return r;
+            }
         }
         if(this.tabelaPai!=null){
             return this.tabelaPai.getEsseRegistro(registro);
